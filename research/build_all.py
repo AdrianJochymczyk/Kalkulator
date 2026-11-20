@@ -167,7 +167,12 @@ plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 10, "axes.edgeco
 
 
 def short(n):
-    n = n.split(" (")[0]
+    legal, _, rest = n.partition(" (")
+    brand = re.split(r",| –| - |;", rest.rstrip(")"))[0].strip() if rest else ""
+    brand = re.sub(r"^(marki|marka|platforma)\s+", "", brand)
+    if brand and (legal.upper() == legal or len(legal) > 30) and len(brand) <= 30:
+        return brand
+    n = legal
     for s in (" sp. z o.o. sp.k.", " sp. z o.o. sp. k.", " spółka z ograniczoną odpowiedzialnością", " sp. z o.o.",
               " S.A.", " SA", " sp. j.", " spółka akcyjna", " Sp. z o.o.", " sp.k.", " sp. k."):
         n = n.replace(s, "")
@@ -179,7 +184,16 @@ def label(c):
     s = short(c["nazwa"])
     r = c["rok"]
     if r != "2025":
-        s += f" ({'FY ' + r[-4:] if len(r) > 9 else r[:7]})"
+        years = re.findall(r"20\d\d", r)
+        if "prawdop" in r:
+            t = "2025?"
+        elif not years:
+            t = "rok ?"
+        elif len(years) == 1 and len(r) <= 6:
+            t = years[0]
+        else:
+            t = f"r.o. do {years[-1]}"
+        s += f" ({t})"
     if c["zrodlo_fin"] == "agregator":
         s += " *"
     return s
@@ -333,9 +347,10 @@ def chart_segments(rows):
         span = max(abs(v) for v in vals) or 1
         for y, s, v in zip(ys, st, vals):
             raw = s[key]
-            ax.text(v + span * 0.01, y, f(raw) if raw is not None else "n/d", va="center", fontsize=8.5, color=INK2)
+            ax.text(v + (span * 0.01 if v >= 0 else -span * 0.01), y, f(raw) if raw is not None else "n/d", va="center",
+                    ha="left" if v >= 0 else "right", fontsize=8.5, color=INK2)
         lo = min(vals + [0])
-        ax.set_xlim(lo * 1.2 if lo < 0 else 0, span * 1.18)
+        ax.set_xlim(lo - span * 0.22 if lo < 0 else 0, span * 1.18)
         ax.axvline(0, color=INK2, linewidth=0.6)
         style_ax(ax)
         ax.set_title(ttl, loc="left", fontsize=11, color=INK)

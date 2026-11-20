@@ -6,7 +6,7 @@ Dane finansowe w tys. PLN. Pole `zrodlo_fin`:
   "agregator"  - dane ze sprawozdań złożonych w KRS, odczytane pośrednio z serwisów
                  (rejestr.io, bizraport.pl, aleo.com, firmy.ai itp.) przez wyniki wyszukiwania;
                  wymagają potwierdzenia w RDF (ekrs.ms.gov.pl)
-Uruchomienie: python3 research/build.py
+Dane 1. rundy (20 spółek). Pełny raport: python3 research/build_all.py
 """
 import csv
 import os
@@ -509,11 +509,6 @@ def chart_combined():
 
 
 if __name__ == "__main__":
-    os.makedirs(os.path.join(HERE, "charts"), exist_ok=True)
-    print(write_csv())
-    print(chart_revenue())
-    print(chart_profit())
-    print(chart_combined())
-    for c in sorted(COMPANIES, key=lambda c: c["przychody"], reverse=True):
-        m = margin(c)
-        print(f"{short(c['nazwa']):28s} {c['rok'][:10]:10s} {c['przychody']:>10} {fmt(c['zysk_netto']):>10} {('%.1f%%' % m) if m is not None else NIE:>8} {c['zrodlo_fin']}")
+    # Pełny raport (wszystkie ~100 firm) generuje build_all.py; ten plik to dane z 1. rundy.
+    import build_all
+    build_all.main()

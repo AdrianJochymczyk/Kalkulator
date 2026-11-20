@@ -30,4 +30,49 @@ OGRANICZENIA = [
      "Załącznik wspomniany w pierwszym poleceniu nie był dostępny. Raport opiera się wyłącznie na źródłach publicznych."],
 ]
 
-ANALIZA = ["(analiza zostanie uzupełniona)"]
+ANALIZA = [
+    "**Skala.** Zestawienie obejmuje 98 firm w 9 segmentach. Przychody ustalono dla 71, zysk netto dla 64. Dane z raportów rocznych lub ESPI ma 20 spółek, głównie z GPW. "
+    "Największe przychody jednostkowe mają:",
+    ["Asseco Poland: 1,70 mld zł,",
+     "Comarch: ok. 1,42 mld zł*,",
+     "Elektrotim: 579 mln zł (bardziej wykonawca instalacji i automatyki budynkowej niż firma IT),",
+     "Comp: 561 mln zł,",
+     "Asseco BS: 478 mln zł,",
+     "Wasko: 388 mln zł,",
+     "Asseco Data Systems: ok. 366 mln zł*,",
+     "Euvic: 360 mln zł,",
+     "Text: 329 mln zł,",
+     "Exatel: ok. 325 mln zł* (2024),",
+     "KIR: 305 mln zł*."],
+    "**Rentowność.** Najwyższą marżę netto (przy przychodach od 5 mln zł) mają:",
+    ["Fakturownia: ok. 44%*, przy czym w mianowniku są przychody operacyjne,",
+     "ArCADiasoft i Athenasoft: ok. 40%*,",
+     "Sygnity i Text: ok. 35-36%,",
+     "Sekocenbud: 35%*,",
+     "Vercom: 34%."],
+    "Mediana marży w segmentach:",
+    ["obieg dokumentów / KSeF (15%), kosztorysowanie i inżynieria (14%) oraz SaaS B2B (12%) są najbardziej rentowne;",
+     "biura projektowe (ok. 1,4%) i contech (ok. 3%) są najmniej rentowne, bo w tych segmentach przeważają usługi i polskie spółki zależne dystrybuujące licencje.",
+     "Straty mają m.in. DataWalk, Synerise, Autenti, Symfonia, Develogic, Exatel oraz kilka biur projektowych: Kuryłowicz, Mott MacDonald, Ramboll i Egis."],
+    "**Budownictwo: kto jest najbliżej.** Budownictwo jest głównym rynkiem 29 firm, a 8 kolejnych ma dla niego dedykowaną ofertę. Rdzeń tworzą trzy grupy:",
+    ["**biura projektowe** (Sweco, Transprojekt Gdański, Multiconsult, Egis, WSP, Ramboll, Mott MacDonald, Arcadis oraz pracownie JEMS, APA Wojciechowski, Kuryłowicz i HRA). "
+     "Są głównym odbiorcą narzędzi BIM. Mają duże przychody (do ok. 160 mln zł), ale niskie marże;",
+     "**dostawcy BIM/CAD i contech**: Autodesk, Bentley i Trimble przez polskie spółki, ich partnerzy Graitec, Arkance i CAD Projekt K&A oraz PlanRadar i ProperGate. "
+     "Polskie spółki dystrybucyjne są małe (6-20 mln zł) i w 2025 r. część z nich straciła przychody;",
+     "**kosztorysowanie i oprogramowanie inżynierskie**: Athenasoft (Norma, Intercenbud), Sekocenbud, Datacomp IT (ZUZIA), Sankom (Audytor), Intersoft, Chandney (WinBud) i Koprinet (Rodos). "
+     "To małe (1-20 mln zł), ale bardzo rentowne nisze."],
+    "**Oferta dedykowana u dużych dostawców:**",
+    ["ERP dla budownictwa: Asseco BS, Symfonia (z Develogic), IFS (IFS Cloud dla firm projektowych i budowlanych) i Hicron (SAP);",
+     "inne rozwiązania branżowe: Autodesk (Construction Cloud), Sescom (facility management) i Fakturownia (oferta dla branży budowlanej)."],
+    "**Integratorzy vs SaaS vs ERP.**",
+    ["Największy wolumen mają integratorzy i software house'y (mediana 252 mln zł): Asseco Poland, Comp, Wasko, Euvic, Atende, Sygnity i Spyrosoft.",
+     "SaaS B2B to wiele średnich firm (mediana ok. 46 mln zł) o wysokich marżach. Wyróżniają się inFakt (173 mln zł*), Text, Vercom, Shoper i Fakturownia, ale z budownictwem są związane słabo.",
+     "Wdrożeniowcy ERP (Hicron, All for One, IFS, Inetum, BPX) są duzi, ale mają słabo dostępne dane publiczne. Tylko OPTeam ma dane z raportu."],
+    "!**Wniosek dla segmentu budowlanego.** Cyfryzacja budownictwa w Polsce dzieli się na trzy grupy:",
+    ["projektowanie, w którym BIM jest już standardem w dużych biurach;",
+     "małe, rentowne narzędzia kosztorysowe;",
+     "ogólne ERP z modułami branżowymi."],
+    "Brakuje dużego krajowego gracza, który łączyłby kosztorys, budżet budowy, podwykonawców, rozliczanie robót, dokumentację z placu budowy i flotę w jednym SaaS. "
+    "Najbliżej są Symfonia z Develogic, ABS i IFS. Contech (PlanRadar, ProperGate) jest w Polsce dopiero na etapie kilku milionów złotych przychodów. "
+    "Firma, która połączy dane z kosztorysów (Norma, ZUZIA, Rodos) z zarządzaniem realizacją, ma wolną przestrzeń rynkową.",
+]
