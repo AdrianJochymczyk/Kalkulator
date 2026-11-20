@@ -1,502 +1,245 @@
-# Polskie spółki IT dla przedsiębiorstw: ERP, SaaS, wdrożenia i oprogramowanie dla budownictwa
+# Polskie spółki IT dla przedsiębiorstw i cyfryzacja budownictwa
 
-*Stan wiedzy na 20.11.2026. Kwoty w tys. PLN, chyba że zaznaczono inaczej. Dane finansowe są jednostkowe (spółka matka), o ile nie zaznaczono inaczej.*
+*Stan na 20.11.2026 · 20 podmiotów · kwoty w tys. PLN · dane jednostkowe, o ile nie zaznaczono inaczej. `*` = dane z agregatora KRS/prasy, do weryfikacji.*
 
-Pliki towarzyszące:
-- dane: [`spolki_it_polska_dane_finansowe.csv`](spolki_it_polska_dane_finansowe.csv)
-- wykresy: [`charts/`](charts/)
-- pobrane raporty: [`reports/`](reports/)
-- skrypt generujący CSV i wykresy: [`build.py`](build.py)
-
----
+Pliki: [`raport_spolki_it_polska.html`](raport_spolki_it_polska.html) (wersja interaktywna) · [`spolki_it_polska_dane_finansowe.csv`](spolki_it_polska_dane_finansowe.csv) · [`charts/`](charts/) · [`reports/`](reports/)
 
 ## 1. Metodologia
 
-1. **Dobór spółek.** Wybrano 20 podmiotów w czterech grupach:
-   - spółki IT z GPW (integratorzy i producenci ERP),
-   - producenci SaaS z GPW,
-   - prywatni dostawcy i wdrożeniowcy ERP,
-   - producenci oprogramowania dla budownictwa (kosztorysowanie, cenniki, BIM, ERP dla deweloperów i GW).
+**Zakres.** Zestawienie obejmuje firmy IT dla przedsiębiorstw działające w Polsce, ze szczególnym uwzględnieniem cyfryzacji budownictwa. Powstało w dwóch rundach: 20 spółek w pierwszej, ok. 80 w drugiej (biura projektowe, wdrożeniowcy, contech, kosztorysowanie, chmura i cyberbezpieczeństwo). Firmy pogrupowano w 9 segmentów.
 
-   Kryteria: znacząca działalność w Polsce, oferta B2B, a w grupie budowlanej związek z budownictwem potwierdzony źródłem.
-2. **Identyfikacja (KRS/NIP/REGON).** Oficjalne API KRS (`api-krs.ms.gov.pl`) i przeglądarka RDF (`rdf-przegladarka.ms.gov.pl`) zwracały z kontenera badawczego stronę „Przerwa techniczna” lub błąd 403. Prawdopodobnie blokują adresy IP spoza Polski.
-   - Numery KRS, NIP i REGON ustalono więc z kilku niezależnych źródeł wtórnych: rejestr.io, imsig.pl (MSiG), bizraport.pl, aleo.com, stopek i regulaminów stron spółek oraz raportów ESPI.
-   - Dla każdej spółki źródła były ze sobą zgodne. Wyjątki opisano w uwagach.
-   - Mimo to **żaden numer nie został potwierdzony bezpośrednio w eKRS**. Przed użyciem formalnym (umowy, due diligence) zalecana jest weryfikacja w https://wyszukiwarka-krs.ms.gov.pl/.
-3. **Dane finansowe, dwa poziomy wiarygodności.**
-   - **Pierwotne** (8 spółek giełdowych i Comarch). Dane odczytano bezpośrednio z raportów rocznych:
-     - formularze RR ESPI,
-     - jednostkowe sprawozdania finansowe w formacie ESEF (xhtml) opublikowane przez GPW, czyli załączniki z serwera money2.wpcdn.pl (strony ESPI money.pl),
-     - strony relacji inwestorskich.
+**Identyfikacja (KRS, NIP, REGON).** Oficjalne API KRS i przeglądarka RDF blokowały adres IP środowiska badawczego. Numery ustalono ze źródeł wtórnych: stopek i regulaminów stron firm, rejestr.io, imsig.pl (MSiG), krs-pobierz.pl, aleo.com, bizraport.pl i raportów ESPI. **Żaden numer nie został potwierdzony bezpośrednio w eKRS.** Przed użyciem formalnym należy je sprawdzić w wyszukiwarce KRS.
 
-     Zysk brutto ze sprzedaży i amortyzację (do EBITDA) odczytano ze sprawozdań ESEF.
-   - **Agregator** (spółki prywatne, oznaczone `*` na wykresach i zakreskowane). Dane pochodzą ze sprawozdań złożonych do KRS, ale odczytano je pośrednio, z serwisów rejestr.io, bizraport.pl, aleo.com, firmy.ai, okredo.com i sprawozdaniaonline.pl (przez wyniki wyszukiwania; strony tych serwisów są dla automatów zablokowane).
-     - Tych liczb nie zweryfikowano z dokumentem źródłowym.
-     - Status badania przez biegłego nie jest znany.
-4. **Rok obrotowy.** Dla każdej spółki użyto ostatniego pełnego roku obrotowego:
-   - 2025 tam, gdzie był dostępny;
-   - 2024 dla trzech małych spółek, dla których nie znaleziono danych za 2025;
-   - inne lata obrotowe: Text S.A. 04.2025–03.2026, Symfonia 10.2024–09.2025.
+**Dane finansowe mają dwa poziomy wiarygodności.**
 
-   Nie użyto danych za okresy częściowe (kwartały, półrocza).
-5. **Pobranie raportów.** Pliki PDF zapisano w `reports/`.
-   - Sprawozdania opublikowane wyłącznie w formacie ESEF (xhtml) wyrenderowano do PDF przeglądarką Chromium bez modyfikacji treści. Oryginalne linki xhtml podano w tabeli.
-   - Dla spółek prywatnych pliki PDF nie były dostępne (RDF zablokowany), patrz sekcja 5.
-6. **Wskaźniki.** Marża netto = zysk netto / przychody. Tam, gdzie spółka nie raportuje EBITDA, obliczono ją jako EBIT + amortyzacja z rachunku przepływów i tak ją oznaczono.
+- **raport** – liczby odczytane z formularza RR ESPI/EBI, sprawozdania ESEF lub raportu rocznego (głównie spółki z GPW i NewConnect);
+- **agregator*** – liczby ze sprawozdań złożonych do KRS, odczytane pośrednio z serwisów agregujących (rejestr.io, bizraport, aleo, firmy.ai, okredo i in.) lub z prasy. Nie zostały zweryfikowane z dokumentem, a status badania przez biegłego jest nieznany.
 
----
+**Rok obrotowy.** Ostatni pełny rok: 2025, gdy był dostępny, w przeciwnym razie 2024. Wyjątki (np. rok kończący się 31.03 lub 30.09) są zaznaczone. Nie użyto okresów częściowych. Dane są jednostkowe (spółka matka), chyba że kolumna typ raportu mówi inaczej.
 
-## 2. Lista spółek (20)
+**Związek z budownictwem** oceniono w skali: rdzeń / oferta dedykowana / pośredni / marginalny / brak. Każda ocena ma źródło w karcie firmy.
 
-Legenda związku z budownictwem:
-- **RDZEŃ**: budownictwo to główny rynek.
-- **DEDYKOWANA OFERTA**: spółka ma osobny produkt lub ofertę dla budownictwa.
-- **POŚREDNI**: potwierdzone wdrożenia u firm budowlanych, ale bez produktu branżowego.
-- **MARGINALNY / BRAK**: związek śladowy lub żaden.
+**Wskaźniki.** Marża netto = zysk netto / przychody. EBITDA obliczona jako EBIT + amortyzacja jest oznaczona.
 
-### A. Spółki giełdowe (dane pierwotne)
+## 2. Segmenty
 
-**1. Asseco Poland S.A.**
-- **Rejestr:** spółka akcyjna, KRS 0000033391, NIP 5220003782, REGON 010334578.
-- **Siedziba:** ul. Olchowa 14, 35-322 Rzeszów. **WWW:** https://pl.asseco.com
-- **Kategoria:** integrator IT / producent oprogramowania.
-- **Działalność:** największy polski producent oprogramowania, spółka matka Grupy Asseco. Tworzy i wdraża systemy dla bankowości, ubezpieczeń, administracji (m.in. ZUS), ochrony zdrowia i energetyki. Wdraża też ERP, m.in. Microsoft Dynamics.
-- **Budownictwo – POŚREDNI:** wdrożenie Dynamics AX z modyfikacjami budowlanymi (rejestr umów, kaucje gwarancyjne inwestor/podwykonawca) w Eiffage Budownictwo Mitex ([case study](https://pl.asseco.com/en/case-study/eiffage-budownictwo-mitex-sa-microsoft-dynamix-ax-60)).
-- **Finanse 2025** (jednostkowe, MSSF, badane, publ. 31.03.2026):
+| Segment | Spółek | Suma przychodów | Mediana przychodów | Mediana marży netto | Rdzeń / oferta budowlana |
+|---|---:|---:|---:|---:|---:|
+| Biura projektowe (BIM) | 0 | 0 | nie ustalono | n/d | 0 |
+| Wdrożeniowcy ERP/CRM | 1 | 128 935 | 128 935 | 11,2% | 0 |
+| Producenci ERP | 7 | 2 483 361 | 103 887 | 7,4% | 2 |
+| Integratorzy i software house'y | 2 | 1 955 859 | 977 930 | 30,7% | 0 |
+| SaaS B2B | 4 | 826 794 | 217 166 | 27,1% | 0 |
+| Obieg dokumentów / BPM / KSeF | 0 | 0 | nie ustalono | n/d | 0 |
+| Cyfryzacja budowy (contech, BIM/CAD) | 1 | 6 354 | 6 354 | 40,2% | 1 |
+| Kosztorysowanie, inżynieria i nieruchomości | 5 | 49 480 | 8 600 | 22,5% | 5 |
+| Chmura / data center / cyberbezpieczeństwo | 0 | 0 | nie ustalono | n/d | 0 |
 
-  | Pozycja | tys. PLN |
-  |---|---|
-  | Przychody operacyjne | 1 703 400 |
-  | Zysk brutto ze sprzedaży | 551 200 |
-  | EBIT | 342 600 |
-  | Zysk netto | 432 700 |
-  | EBITDA (obliczona) | ≈414 300 |
-  | Marża netto | 25,4% |
-
-  Zysk netto przewyższa EBIT dzięki dywidendom od spółek zależnych. Dane skonsolidowane: przychody 16 779,8 mln zł, zysk netto przypisany akcjonariuszom 1 138,7 mln zł.
-- **Źródła:** [sprawozdanie ESEF](https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260331_191944_0510033759_YE25_Sprawozdanie_jednostkowe_Asseco_Poland.xhtml), [formularz RR (money.pl)](https://www.money.pl/gielda/raporty/raport,plsoftb00016,7271046741824577.html), [KRS – rejestr.io](https://rejestr.io/krs/33391).
-
-**2. Comarch S.A.**
-- **Rejestr:** spółka akcyjna, KRS 0000057567, NIP 6770065406, REGON 350527377.
-- **Siedziba:** al. Jana Pawła II 39A, 31-864 Kraków. **WWW:** https://www.comarch.pl
-- **Kategoria:** producent ERP/SaaS + integrator. Spółka utraciła status publiczny 26.03.2025.
-- **Działalność:** ERP (Comarch ERP XL, Optima, Altum, także w chmurze), CRM i programy lojalnościowe, OSS/BSS dla telekomów, systemy dla finansów, zdrowia i sektora publicznego, własne centra danych.
-- **Budownictwo – POŚREDNI:** case studies ERP u firm budowlanych [ALSTAL Grupa Budowlana](https://www.comarch.pl/files-pl/file_111/ALSTALGB-CS.pdf) i [ELMO SA](https://www.comarch.pl/files-pl/file_115/ELMO-SA.pdf).
-- **Finanse 2025:**
-  - *Grupa* (z [raportu rocznego PDF](https://www.comarch.pl/files-pl/file_1234/Comarch-Raport-Roczny-2025.pdf), s. 24): przychody 1 714 mln zł (+6% r/r), EBITDA 381 mln zł, zakontraktowanie 1 935 mln zł.
-  - *Jednostkowe* (agregator [bizraport.pl](https://www.bizraport.pl/krs/0000057567/comarch-spolka-akcyjna), niezweryfikowane): przychody netto 1 417 910 tys., zysk netto 120 493 tys., marża 8,5%.
-  - *Kontrolnie, jednostkowe 2024* ([QSr 4/2024](https://www.comarch.pl/files-pl/file_793/QSr_4_2024.pdf)): przychody 1 341 703 tys., zysk netto 112 402 tys.
-- **Źródło KRS:** [rejestr.io](https://rejestr.io/krs/57567).
-
-**3. Asseco Business Solutions S.A.**
-- **Rejestr:** spółka akcyjna, KRS 0000028257, NIP 5222612717, REGON 017293003.
-- **Siedziba:** ul. Konrada Wallenroda 4C, 20-607 Lublin. **WWW:** https://assecobs.pl
-- **Kategoria:** dostawca ERP / producent SaaS.
-- **Działalność:** własne ERP (Macrologic, Softlab, WAPRO z obsługą KSeF), Asseco HR, system mobilnej sprzedaży Mobile Touch, platformy B2B; sprzedaż on-premise i w chmurze.
-- **Budownictwo – DEDYKOWANA OFERTA:** [ERP dla budownictwa](https://assecobs.pl/erp/construction/?lang=en). Obejmuje budżety i harmonogramy projektów, kosztorysy, rezerwację sprzętu, rozliczanie per budowa i faktury powiązane z protokołami odbioru.
-- **Finanse 2025** (jednostkowe, MSSF, badane, publ. 04.03.2026):
-
-  | Pozycja | tys. PLN |
-  |---|---|
-  | Przychody operacyjne | 478 358 |
-  | Zysk brutto ze sprzedaży | 212 308 |
-  | EBIT | 145 803 |
-  | Zysk netto | 133 689 |
-  | EBITDA (obliczona) | 186 377 |
-  | Marża netto | 27,9% |
-- **Źródła:** [sprawozdanie ESEF](https://assecobs.pl/wp-content/uploads/2025/04/Jednostkowe_Sprawozdanie_finansowe_ABS_2025.xhtml), [wybrane dane](https://assecobs.pl/wp-content/uploads/2025/04/2025_Wybrane_dane_finansowe_Asseco_Business_Solutions.xhtml), [KRS – rejestr.io](https://rejestr.io/krs/28257).
-
-**4. Sygnity S.A.**
-- **Rejestr:** spółka akcyjna, KRS 0000008162, NIP 5860005293, REGON 190407926.
-- **Siedziba:** ul. Postępu 17B, 02-676 Warszawa. **WWW:** https://www.sygnity.pl
-- **Kategoria:** integrator / konsultant IT.
-- **Działalność:** systemy dedykowane i własne dla administracji publicznej, finansów i energetyki; utrzymanie i outsourcing.
-- **Budownictwo – BRAK** potwierdzonego związku.
-- **Finanse 2025** (jednostkowe, MSSF, badane, publ. 24.03.2026):
-
-  | Pozycja | tys. PLN |
-  |---|---|
-  | Przychody | 252 459 |
-  | Zysk brutto ze sprzedaży | 118 336 |
-  | EBIT | 87 099 |
-  | Zysk netto | 90 690 |
-  | EBITDA (obliczona) | 92 351 |
-  | Marża netto | 35,9% |
-- **Źródła:** [sprawozdanie ESEF](https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260324_204010_1904899437_JSF-Sygnity-2025-12-31-1-pl.xhtml), [formularz RR](https://www.money.pl/gielda/raporty/raport,plcmpld00016,7268229468722241.html), [KRS – rejestr.io](https://rejestr.io/krs/8162).
-
-**5. Vercom S.A.**
-- **Rejestr:** spółka akcyjna, KRS 0000535618, NIP 7811765125, REGON 300061423.
-- **Siedziba:** ul. Wierzbięcice 1B, 61-569 Poznań. **WWW:** https://vercom.pl
-- **Kategoria:** producent SaaS/CPaaS.
-- **Działalność:** platformy API do komunikacji e-mail i SMS: SMSAPI, EmailLabs, Mailjet.
-- **Budownictwo – BRAK.**
-- **Finanse 2025** (jednostkowe, MSSF, badane, publ. 18.03.2026):
-
-  | Pozycja | tys. PLN |
-  |---|---|
-  | Przychody | 240 864 |
-  | EBIT | 72 834 |
-  | Zysk netto | 80 885 |
-  | EBITDA (obliczona) | 80 810 |
-  | Marża netto | 33,6% |
-
-  Rachunek jest w układzie rodzajowym, więc nie ma pozycji „zysk brutto ze sprzedaży”. Dane skonsolidowane: przychody 471 152 tys., zysk netto akcjonariuszy 89 866 tys.
-- **Źródła:** [sprawozdanie ESEF](https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260318_065948_1206312055_JSF_vrc-2025-12-31-1-pl.xhtml), [sprawozdanie zarządu PDF](https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260318_065948_1206312055_Sprawozdanie_Zarzadu_Vercom_2025.pdf), [KRS – rejestr.io](https://rejestr.io/krs/535618).
-
-**6. Shoper S.A.**
-- **Rejestr:** spółka akcyjna, KRS 0000395171, NIP 9452156998, REGON 121495203. **Od 01.09.2026 połączona z cyber_Folks S.A.** (KRS 0000685595).
-- **Siedziba:** ul. Pawia 9, 31-154 Kraków. **WWW:** https://www.shoper.pl
-- **Kategoria:** producent SaaS (platforma e-commerce dla MŚP).
-- **Budownictwo – MARGINALNY:** poradnik sprzedaży artykułów budowlanych i klienci-sklepy budowlane; brak modułu branżowego.
-- **Finanse 2025** (jednostkowe, MSSF, badane, publ. 18.03.2026):
-
-  | Pozycja | tys. PLN |
-  |---|---|
-  | Przychody | 193 467 |
-  | EBIT | 45 187 |
-  | EBITDA (raportowana) | 61 366 |
-  | Zysk netto | 35 409 |
-  | Marża netto | 18,3% |
-
-  Dane skonsolidowane: przychody 217 974 tys., zysk netto 43 083 tys.
-- **Źródła:** [sprawozdanie ESEF](https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260318_070317_0996477630_JSF-Shoper-2025-12-31.xhtml), [formularz RR](https://www.money.pl/gielda/raporty/raport,plshpr000021,7266106714673729.html), [informacja o połączeniu](https://www.biznesradar.pl/a/150574,cyber-folks-sa-26-2026-wpis-polaczenia-cyber-folks-s-a-z-shoper-s-a-podwyzszenia-kapitalu-zakladowego-oraz-zmiany-statutu-w-zwia).
-
-**7. Text S.A.** (dawniej LiveChat Software S.A.)
-- **Rejestr:** spółka akcyjna, KRS 0000290756, NIP 8992447196, REGON 932803200.
-- **Siedziba:** ul. Zwycięska 47, 53-033 Wrocław. **WWW:** https://www.text.com
-- **Kategoria:** producent SaaS.
-- **Działalność:** aplikacje LiveChat, ChatBot, HelpDesk i KnowledgeBase; sprzedaż głównie zagraniczna.
-- **Budownictwo – MARGINALNY:** wyłącznie [strona marketingowa](https://www.livechat.com/solutions/construction-companies/).
-- **Finanse za rok obrotowy 04.2025–03.2026** (jednostkowe, MSR, badane, publ. 26.06.2026):
-
-  | Pozycja | tys. PLN |
-  |---|---|
-  | Przychody | 329 073 |
-  | Zysk brutto ze sprzedaży | 222 320 |
-  | EBIT | 126 258 |
-  | EBITDA (raportowana) | 152 654 |
-  | Zysk netto | 115 935 |
-  | Marża netto | 35,2% |
-- **Źródła:** [sprawozdanie zarządu ESEF](https://investor.text.com/uploads/txt_spraw_zarzadu-2026-03-31-1-pl.xhtml), [KRS – rejestr.io](https://rejestr.io/krs/290756).
-
-**8. iFirma S.A.**
-- **Rejestr:** spółka akcyjna, KRS 0000281947, NIP 8981647572, REGON 931082394.
-- **Siedziba:** ul. Grabiszyńska 241G, 53-234 Wrocław. **WWW:** https://www.ifirma.pl
-- **Kategoria:** producent SaaS (księgowość i fakturowanie online z integracją KSeF) + biuro rachunkowe.
-- **Budownictwo – BRAK** modułu branżowego.
-- **Finanse 2025** (jednostkowe, UoR, badane przez 4Audyt, publ. 20.03.2026):
-
-  | Pozycja | tys. PLN |
-  |---|---|
-  | Przychody netto | 63 390 |
-  | EBIT | 15 455 |
-  | Zysk netto | 13 017 |
-  | EBITDA (obliczona) | 15 926 |
-  | Marża netto | 20,5% |
-- **Źródła:** [sprawozdanie ESEF](https://www.ifirma.pl/wp-content/raporty-xml/SAR-2025/raportroczny-SAR_08RoczneSF2025.xhtml), [formularz RR](https://www.money.pl/gielda/raporty/raport,plpwrmd00011,7266460758348353.html), [KRS – rejestr.io](https://rejestr.io/krs/281947).
-
-### B. Prywatni dostawcy i wdrożeniowcy ERP (dane z agregatorów, do weryfikacji)
-
-**9. Symfonia sp. z o.o.**
-- **Rejestr:** KRS 0000228956, NIP 5262831503, REGON 140045209.
-- **Siedziba:** Al. Jerozolimskie 132, 02-305 Warszawa. **WWW:** https://symfonia.pl
-- **Kategoria:** dostawca ERP/HR/SaaS dla MŚP i średnich firm. Dawniej Sage Symfonia, obecnie własność Accel-KKR.
-- **Budownictwo – DEDYKOWANA OFERTA:**
-  - w grudniu 2025 przejęła [Develogic](https://symfonia.pl/blog/aktualnosci-symfonii/develogic-dolacza-do-grupy-symfonia-nowy-etap-na-drodze-do-cyfryzacji-branzy-budowlanej/) (ERP dla deweloperów i generalnych wykonawców);
-  - prowadzi stronę [ERP dla firm budowlanych](https://symfonia.pl/erp/erp-dla-firm-budowlanych/).
-- **Finanse za rok obrotowy 10.2024–09.2025** (jednostkowe, wg [firmy.ai](https://firmy.ai/KRS/0000228956)):
-  - przychody 227 960 tys.,
-  - **strata netto −55 537 tys.** (marża −24,4%),
-  - EBITDA ok. 29 640 tys.
-
-  Według [bizraport](https://www.bizraport.pl/krs/0000228956/symfonia-spolka-z-ograniczona-odpowiedzialnoscia) skonsolidowana strata wyniosła −37,5 mln zł.
-
-**10. IT.integro sp. z o.o.**
-- **Rejestr:** KRS 0000014040, NIP 7780021279, REGON 632507882.
-- **Siedziba:** ul. Ząbkowicka 12, 60-166 Poznań. **WWW:** https://itintegro.com
-- **Kategoria:** integrator / wdrożeniowiec ERP. Partner Microsoft Dynamics 365 Business Central, publikuje ponad 30 aplikacji na Microsoft AppSource.
-- **Budownictwo – BRAK.**
-- **Finanse 2025** (agregator): przychody netto ok. 128 935 tys., EBIT ok. 15 400 tys., zysk netto 14 479 tys., marża 11,2%.
-- **Źródła:** [bizraport](https://www.bizraport.pl/krs/0000014040/it-integro-spolka-z-ograniczona-odpowiedzialnoscia), [rejestr.io](https://rejestr.io/krs/14040).
-
-**11. InsERT S.A.**
-- **Rejestr:** KRS 0000306888, NIP 8981945134, REGON 932283479.
-- **Siedziba:** ul. Jerzmanowska 2, 54-519 Wrocław. **WWW:** https://www.insert.com.pl
-- **Kategoria:** oprogramowanie ERP i księgowe dla MŚP: Subiekt, Rewizor, Gratyfikant (linie GT i nexo), obsługa KSeF.
-- **Budownictwo – BRAK** modułu branżowego.
-- **Finanse 2025** (agregator): przychody operacyjne ok. 103 887 tys., EBIT ok. 4 460 tys., zysk netto 4 174 tys., marża 4,0%.
-- **Źródła:** [bizraport](https://www.bizraport.pl/krs/0000306888/insert-spolka-akcyjna), [rejestr.io](https://rejestr.io/krs/306888).
-
-**12. Forterro Polska sp. z o.o.** (dawniej BPSC)
-- **Rejestr:** KRS 0000705385, NIP 6340134346, REGON 003469134.
-- **Siedziba:** Al. Roździeńskiego 188H, 40-203 Katowice. **WWW:** https://www.bpsc.com.pl
-- **Kategoria:** producent i wdrożeniowiec ERP/MES. Produkt BPSC ERP (dawniej Impuls EVO), klienci głównie z przemysłu.
-- **Budownictwo – BRAK.**
-- **Finanse, prawdopodobnie 2025** (agregator): przychody netto 93 963 tys., EBIT 28 371 tys., zysk netto 24 058 tys., marża 25,6%. Etykietę roku podaje tylko rejestr.io.
-- **Źródła:** [bizraport](https://www.bizraport.pl/krs/0000705385/forterro-polska-spolka-z-ograniczona-odpowiedzialnoscia), [zmiana nazwy](https://www.bpsc.com.pl/pl/aktualnosci/forterro-polska-zamiast-bpsc).
-
-**13. Streamsoft sp. z o.o. sp.k.**
-- **Rejestr:** KRS 0000443818, NIP 9291851723, REGON 081108705.
-- **Siedziba:** Al. Wojska Polskiego 11, 65-077 Zielona Góra. **WWW:** https://streamsoft.pl
-- **Kategoria:** dostawca ERP (Streamsoft Verto i Prestiż).
-- **Budownictwo – MARGINALNY:** klienci z branży materiałów budowlanych (Centrostal, Plastixal).
-- **Finanse 2025** (agregator): przychody 84 700 tys., EBIT ok. 6 530 tys., zysk netto 5 304 tys., marża 6,3%. Według [analizafirm](https://analizafirm.pl/firma/0000443818/streamsoft) przychody wyniosły 92 410 tys., a zysk netto ok. 6 780 tys.
-
-**14. Soneta sp. z o.o.** (enova365, Grupa Asseco)
-- **Rejestr:** KRS 0000109244, NIP 6792705304, REGON 356381673.
-- **Siedziba:** ul. Kustronia 44A, 30-432 Kraków. **WWW:** https://www.enova.pl
-- **Kategoria:** producent ERP/HR enova365, sprzedawanego przez partnerów.
-- **Budownictwo – POŚREDNI:** wdrożenia partnerów, m.in. system zarządzania budową dla [BPBP S.A.](https://www.enova.pl/content/uploads/2025/09/enova365-bpbp-s.a.-case-study-mg-rozszerzone.pdf) i projekt [PEUiM](https://www.enova.pl/content/uploads/2026/01/peuim.pdf).
-- **Finanse 2025** (agregator [sprawozdaniaonline](https://sprawozdaniaonline.pl/SprawozdaniaFinansowe/0000109244/SONETA-SPOLKA-Z-OGRANICZONA-ODPOWIEDZIALNOSCIA)):
-  - przychody 76 583 tys.,
-  - **zysk netto: nie ustalono** (EMIS podaje tylko dynamikę +106% r/r),
-  - dla porównania 2023: zysk netto 8 051 tys.
-
-### C. Oprogramowanie i dane dla budownictwa (dane z agregatorów, do weryfikacji)
-
-**15. Athenasoft sp. z o.o.**
-- **Rejestr:** KRS 0000035122, NIP 1131896687, REGON 012924870.
-- **Siedziba:** ul. Leszczynowa 7, 03-197 Warszawa. **WWW:** https://ath.pl
-- **Działalność:** kosztorysowanie (Norma EXPERT, STANDARD, PRO) i baza cen INTERCENBUD. Intercenbud to marka Athenasoft, nie osobna spółka.
-- **Budownictwo – RDZEŃ.**
-- **Finanse 2025** (agregator): przychody netto 20 212 tys., zysk netto 8 051 tys., marża 39,8%.
-- **Źródła:** [bizraport](https://www.bizraport.pl/krs/0000035122/athenasoft-spolka-z-ograniczona-odpowiedzialnoscia), [Intercenbud – produkt](https://ath.pl/pl-pl/produkty/baza-cen-intercenbud).
-
-**16. SEKOCENBUD sp. z o.o.** (do 2023 r. OWEOB „Promocja”)
-- **Rejestr:** KRS 0000092639, NIP 5260210441, REGON 001266562.
-- **Siedziba:** ul. Puławska 182, 02-670 Warszawa. **WWW:** https://sekocenbud.pl
-- **Działalność:** system cen SEKOCENBUD i program kosztorysowy SeKo.
-- **Budownictwo – RDZEŃ.**
-- **Finanse 2025** (agregator [rejestr.io](https://rejestr.io/krs/92639)): przychody 11 925 tys., zysk netto 4 132 tys., marża 34,6%.
-
-**17. Develogic sp. z o.o.**
-- **Rejestr:** KRS 0000873823, NIP 8971731779, REGON 020562490.
-- **Siedziba:** Poznań. **WWW:** https://develogic.pl
-- **Działalność:** ERP dla deweloperów i generalnych wykonawców: budżety inwestycji, umowy z podwykonawcami, zarządzanie budową, sprzedaż lokali. Od grudnia 2025 w Grupie Symfonia.
-- **Budownictwo – RDZEŃ.**
-- **Finanse 2025** (agregator): przychody ok. 8 600 tys., strata netto −1 375 tys.
-- **Źródła:** [rejestr.io](https://rejestr.io/krs/873823), [nipregon](https://nipregon.pl/firma/develogic-spolka-z-ograniczona-odpowiedzialnoscia-nip-8971731779).
-- **Uwaga:** średnia pewność, że marka Develogic należy do tego numeru KRS.
-
-**18. Datacomp IT sp. z o.o.**
-- **Rejestr:** KRS 0000936569, NIP 6793228148, **REGON nie ustalono**.
-- **Siedziba:** Kraków. **WWW:** https://datacomp.com.pl
-- **Działalność:** kosztorysowanie ZUZIA oraz ZUZIAbim (BIM 5D).
-- **Budownictwo – RDZEŃ.**
-- **Finanse 2024** (agregator [okredo](https://okredo.com/pl-pl/firma/datacomp-it-spolka-z-ograniczona-odpowiedzialnoscia-krs-0000936569)): przychody 7 232 tys., wynik netto −3 tys. (ok. 0).
-
-**19. ArCADiasoft Chudzik sp. j.**
-- **Rejestr:** spółka jawna wpisana do KRS, KRS 0000316955, NIP 7251676810, REGON 471726120.
-- **Siedziba:** ul. Sienkiewicza 85/87, 90-057 Łódź. **WWW:** https://www.arcadiasoft.pl
-- **Działalność:** ArCADia BIM (architektura, instalacje, konstrukcje) oraz moduły ArCADia-RAMA i INTERsoft.
-- **Budownictwo – RDZEŃ.**
-- **Finanse 2024** (agregator [bizraport](https://www.bizraport.pl/krs/0000316955/arcadiasoft-chudzik-spolka-jawna)): przychody operacyjne 6 354 tys., zysk netto 2 554 tys., marża 40,2%.
-
-**20. ORGBUD-SERWIS sp. z o.o.**
-- **Rejestr:** KRS 0000153986, NIP 7780045280, REGON 004866423.
-- **Siedziba:** ul. Stablewskiego 43, Poznań. **WWW:** https://orgbud.pl
-- **Działalność:** informatory cenowe dla budownictwa, szkolenia z kosztorysowania, dystrybucja programów kosztorysowych.
-- **Budownictwo – RDZEŃ.**
-- **Finanse 2024** (agregator [rejestr.io](https://rejestr.io/krs/153986)): przychody 1 511 tys., zysk netto 340 tys., marża 22,5%.
-
-**Odrzucony kandydat:** Simple S.A. (SIMPLE.ERP, KRS 0000065743). Spółka nie jest już notowana (wykup przez TSS Europe). Nie znaleziono kwot za 2024 ani 2025, jedynie dynamikę z EMIS, więc nie spełniła wymogu danych.
-
----
+![Segmenty](charts/segmenty.png)
 
 ## 3. Tabela zbiorcza
 
-Przychody i zysk netto w tys. PLN, dane jednostkowe. `*` oznacza dane z agregatora KRS, niezweryfikowane z dokumentem.
-
-| # | Spółka | KRS | Kategoria | Główny produkt / usługa | Związek z budownictwem | Rok | Przychody | Zysk netto | Marża netto | Raport |
+| # | Firma | KRS | Segment | Główny produkt / usługa | Budownictwo | Rok | Przychody | Zysk netto | Marża | Dane |
 |---|---|---|---|---|---|---|---:|---:|---:|---|
-| 1 | Asseco Poland S.A. | 0000033391 | Integrator / producent oprogramowania | Systemy dla finansów, administracji, zdrowia; wdrożenia ERP | pośredni | 2025 | 1 703 400 | 432 700 | 25,4% | [ESEF](https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260331_191944_0510033759_YE25_Sprawozdanie_jednostkowe_Asseco_Poland.xhtml) |
-| 2 | Comarch S.A. | 0000057567 | Producent ERP/SaaS + integrator | Comarch ERP XL/Optima/Altum, CRM, telco | pośredni | 2025 | 1 417 910* | 120 493* | 8,5%* | [PDF (grupa)](https://www.comarch.pl/files-pl/file_1234/Comarch-Raport-Roczny-2025.pdf) |
-| 3 | Asseco Business Solutions S.A. | 0000028257 | Dostawca ERP / SaaS | Macrologic, Softlab, WAPRO ERP, Asseco HR | dedykowana oferta | 2025 | 478 358 | 133 689 | 27,9% | [ESEF](https://assecobs.pl/wp-content/uploads/2025/04/Jednostkowe_Sprawozdanie_finansowe_ABS_2025.xhtml) |
-| 4 | Text S.A. | 0000290756 | Producent SaaS | LiveChat, ChatBot, HelpDesk | marginalny | 04.2025–03.2026 | 329 073 | 115 935 | 35,2% | [ESEF](https://investor.text.com/uploads/txt_spraw_zarzadu-2026-03-31-1-pl.xhtml) |
-| 5 | Sygnity S.A. | 0000008162 | Integrator / konsultant IT | Systemy dla administracji i finansów | brak | 2025 | 252 459 | 90 690 | 35,9% | [ESEF](https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260324_204010_1904899437_JSF-Sygnity-2025-12-31-1-pl.xhtml) |
-| 6 | Vercom S.A. | 0000535618 | Producent SaaS/CPaaS | SMSAPI, EmailLabs, Mailjet | brak | 2025 | 240 864 | 80 885 | 33,6% | [ESEF](https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260318_065948_1206312055_JSF_vrc-2025-12-31-1-pl.xhtml) |
-| 7 | Symfonia sp. z o.o. | 0000228956 | Dostawca ERP/HR/SaaS | Symfonia ERP; Develogic dla budownictwa | dedykowana oferta | 10.2024–09.2025 | 227 960* | −55 537* | −24,4%* | [rejestr.io](https://rejestr.io/krs/228956/symfonia/sprawozdania) |
-| 8 | Shoper S.A. | 0000395171 | Producent SaaS (e-commerce) | Platforma sklepów internetowych | marginalny | 2025 | 193 467 | 35 409 | 18,3% | [ESEF](https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260318_070317_0996477630_JSF-Shoper-2025-12-31.xhtml) |
-| 9 | IT.integro sp. z o.o. | 0000014040 | Integrator ERP (MS Dynamics) | Business Central + aplikacje AppSource | brak | 2025 | 128 935* | 14 479* | 11,2%* | [rejestr.io](https://rejestr.io/krs/14040) |
-| 10 | InsERT S.A. | 0000306888 | Dostawca ERP dla MŚP | Subiekt, Rewizor, Gratyfikant (nexo/GT) | brak | 2025 | 103 887* | 4 174* | 4,0%* | [rejestr.io](https://rejestr.io/krs/306888/insert/sprawozdania) |
-| 11 | Forterro Polska sp. z o.o. | 0000705385 | Dostawca i wdrożeniowiec ERP/MES | BPSC ERP (ex Impuls) | brak | 2025 (prawdop.) | 93 963* | 24 058* | 25,6%* | [rejestr.io](https://rejestr.io/krs/705385) |
-| 12 | Streamsoft sp. z o.o. sp.k. | 0000443818 | Dostawca ERP | Streamsoft Verto, Prestiż | marginalny | 2025 | 84 700* | 5 304* | 6,3%* | [rejestr.io](https://rejestr.io/krs/443818) |
-| 13 | Soneta sp. z o.o. | 0000109244 | Dostawca ERP/HR | enova365 | pośredni | 2025 | 76 583* | nie ustalono | nie ustalono | [sprawozdaniaonline](https://sprawozdaniaonline.pl/SprawozdaniaFinansowe/0000109244/SONETA-SPOLKA-Z-OGRANICZONA-ODPOWIEDZIALNOSCIA) |
-| 14 | iFirma S.A. | 0000281947 | Producent SaaS (księgowość, KSeF) | ifirma.pl | brak | 2025 | 63 390 | 13 017 | 20,5% | [ESEF](https://www.ifirma.pl/wp-content/raporty-xml/SAR-2025/raportroczny-SAR_08RoczneSF2025.xhtml) |
-| 15 | Athenasoft sp. z o.o. | 0000035122 | Rozwiązanie budowlane | Norma (kosztorysy), Intercenbud (ceny) | **rdzeń** | 2025 | 20 212* | 8 051* | 39,8%* | [rejestr.io](https://rejestr.io/krs/35122) |
-| 16 | SEKOCENBUD sp. z o.o. | 0000092639 | Rozwiązanie budowlane | Ceny SEKOCENBUD, SeKo | **rdzeń** | 2025 | 11 925* | 4 132* | 34,6%* | [rejestr.io](https://rejestr.io/krs/92639) |
-| 17 | Develogic sp. z o.o. | 0000873823 | ERP dla budownictwa | ERP dla deweloperów i GW | **rdzeń** | 2025 | 8 600* | −1 375* | −16,0%* | [rejestr.io](https://rejestr.io/krs/873823) |
-| 18 | Datacomp IT sp. z o.o. | 0000936569 | Rozwiązanie budowlane | ZUZIA, ZUZIAbim | **rdzeń** | 2024 | 7 232* | −3* | ≈0%* | [rejestr.io](https://rejestr.io/krs/936569) |
-| 19 | ArCADiasoft Chudzik sp. j. | 0000316955 | Rozwiązanie budowlane (BIM) | ArCADia BIM, RAMA | **rdzeń** | 2024 | 6 354* | 2 554* | 40,2%* | [rejestr.io](https://rejestr.io/krs/316955) |
-| 20 | ORGBUD-SERWIS sp. z o.o. | 0000153986 | Rozwiązanie budowlane (ceny, szkolenia) | Cenniki, kursy, KOBRA | **rdzeń** | 2024 | 1 511* | 340* | 22,5%* | [rejestr.io](https://rejestr.io/krs/153986) |
+| 1 | Asseco Poland S.A. | 0000033391 | Integratorzy i software house'y | Własne systemy dla bankowości, ubezpieczeń, administracji, zdrowia, energetyki; wdrożenia ERP (m.in. Microsoft Dynamics) | pośredni | 2025 | 1 703 400 | 432 700 | 25,4% | [link](https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260331_191944_0510033759_YE25_Sprawozdanie_jednostkowe_Asseco_Poland.xhtml) |
+| 2 | Comarch S.A. | 0000057567 | Producenci ERP | Comarch ERP XL / Optima / Altum, CRM i lojalność, OSS/BSS, systemy dla finansów i zdrowia, chmura/data center | pośredni | 2025 | 1 417 910* | 120 493* | 8,5% | [link](https://www.comarch.pl/files-pl/file_1234/Comarch-Raport-Roczny-2025.pdf) |
+| 3 | Asseco Business Solutions S.A. | 0000028257 | Producenci ERP | Macrologic ERP, Softlab ERP, WAPRO ERP (KSeF), Asseco HR, Mobile Touch (SFA), e-commerce B2B | oferta dedykowana | 2025 | 478 358 | 133 689 | 27,9% | [link](https://assecobs.pl/wp-content/uploads/2025/04/Jednostkowe_Sprawozdanie_finansowe_ABS_2025.xhtml) |
+| 4 | Text S.A. | 0000290756 | SaaS B2B | LiveChat, ChatBot, HelpDesk, KnowledgeBase, OpenWidget - SaaS do obsługi klienta i sprzedaży z AI | marginalny | 2025/26 (01.04.2025-31.03.2026) | 329 073 | 115 935 | 35,2% | [link](https://investor.text.com/uploads/txt_spraw_zarzadu-2026-03-31-1-pl.xhtml) |
+| 5 | Sygnity S.A. | 0000008162 | Integratorzy i software house'y | Systemy dedykowane i własne dla administracji publicznej, finansów, energetyki; utrzymanie i outsourcing | brak | 2025 | 252 459 | 90 690 | 35,9% | [link](https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260324_204010_1904899437_JSF-Sygnity-2025-12-31-1-pl.xhtml) |
+| 6 | Vercom S.A. | 0000535618 | SaaS B2B | Platformy komunikacji API: SMSAPI, EmailLabs, Mailjet (e-mail i SMS transakcyjne/marketingowe) | brak | 2025 | 240 864 | 80 885 | 33,6% | [link](https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260318_065948_1206312055_JSF_vrc-2025-12-31-1-pl.xhtml) |
+| 7 | Symfonia sp. z o.o. | 0000228956 | Producenci ERP | Symfonia ERP (FK, kadry-płace, handel, produkcja), rozwiązania chmurowe; od 12.2025 Develogic ERP dla budownictwa | oferta dedykowana | 01.10.2024-30.09.2025 | 227 960* | -55 537* | -24,4% | [link](https://rejestr.io/krs/228956/symfonia/sprawozdania) |
+| 8 | Shoper S.A. | 0000395171 | SaaS B2B | Platforma SaaS do sklepów internetowych (abonament) z płatnościami, logistyką i marketingiem | marginalny | 2025 | 193 467 | 35 409 | 18,3% | [link](https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260318_070317_0996477630_JSF-Shoper-2025-12-31.xhtml) |
+| 9 | IT.integro sp. z o.o. | 0000014040 | Wdrożeniowcy ERP/CRM | Wdrożenia Microsoft Dynamics 365 Business Central; ponad 30 aplikacji na Microsoft AppSource | brak | 2025 | 128 935* | 14 479* | 11,2% | [link](https://rejestr.io/krs/14040/it-integro) |
+| 10 | InsERT S.A. | 0000306888 | Producenci ERP | Subiekt, Rachmistrz, Rewizor, Gratyfikant (linie GT i nexo), integracja z KSeF | brak | 2025 | 103 887* | 4 174* | 4,0% | [link](https://rejestr.io/krs/306888/insert/sprawozdania) |
+| 11 | Forterro Polska sp. z o.o. | 0000705385 | Producenci ERP | BPSC ERP (dawniej Impuls EVO): finanse, HR, produkcja/MES, sprzedaż, logistyka, CRM, zarządzanie projektami | brak | 2025 (prawdopodobnie - wg etykiety rejestr.io) | 93 963* | 24 058* | 25,6% | [link](https://rejestr.io/krs/705385/forterro-polska) |
+| 12 | Streamsoft sp. z o.o. sp.k. | 0000443818 | Producenci ERP | Streamsoft Verto, Streamsoft Prestiż (finanse, kadry-płace, handel, logistyka, produkcja, BI) | marginalny | 2025 | 84 700* | 5 304* | 6,3% | [link](https://rejestr.io/krs/443818) |
+| 13 | Soneta sp. z o.o. | 0000109244 | Producenci ERP | enova365 (FK, kadry-płace, handel/magazyn, CRM, workflow, BI), TRIVA | pośredni | 2025 | 76 583* | nie ustalono | nie ustalono | [link](https://sprawozdaniaonline.pl/SprawozdaniaFinansowe/0000109244/SONETA-SPOLKA-Z-OGRANICZONA-ODPOWIEDZIALNOSCIA) |
+| 14 | iFirma S.A. | 0000281947 | SaaS B2B | ifirma.pl - księgowość i fakturowanie online z integracją KSeF; usługi biura rachunkowego | brak | 2025 | 63 390 | 13 017 | 20,5% | [link](https://www.ifirma.pl/wp-content/raporty-xml/SAR-2025/raportroczny-SAR_08RoczneSF2025.xhtml) |
+| 15 | Athenasoft sp. z o.o. | 0000035122 | Kosztorysowanie, inżynieria i nieruchomości | Norma EXPERT, Norma STANDARD 2, Norma PRO; baza cen INTERCENBUD | rdzeń | 2025 | 20 212* | 8 051* | 39,8% | [link](https://rejestr.io/krs/35122/athenasoft) |
+| 16 | SEKOCENBUD sp. z o.o. | 0000092639 | Kosztorysowanie, inżynieria i nieruchomości | System cen SEKOCENBUD (biuletyny, SEKOCENBUD NET), program kosztorysowy SeKo | rdzeń | 2025 | 11 925* | 4 132* | 34,6% | [link](https://rejestr.io/krs/92639/sekocenbud) |
+| 17 | Develogic sp. z o.o. | 0000873823 | Kosztorysowanie, inżynieria i nieruchomości | Develogic ERP: budżetowanie inwestycji, zakupy i umowy z podwykonawcami, zarządzanie budową, CRM i sprzedaż lokali, finanse | rdzeń | 2025 | 8 600* | -1 375* | -16,0% | [link](https://rejestr.io/krs/873823/develogic) |
+| 18 | Datacomp IT sp. z o.o. | 0000936569 | Kosztorysowanie, inżynieria i nieruchomości | ZUZIA (kosztorysowanie robót budowlanych, instalacyjnych, drogowych, telekom.), ZUZIAbim | rdzeń | 2024 | 7 232* | -3* | -0,0% | [link](https://rejestr.io/krs/936569/datacomp-it) |
+| 19 | ArCADiasoft Chudzik sp. j. | 0000316955 | Cyfryzacja budowy (contech, BIM/CAD) | ArCADia BIM (architektura, instalacje, konstrukcje), ArCADia-RAMA, INTERsoft | rdzeń | 2024 | 6 354* | 2 554* | 40,2% | [link](https://rejestr.io/krs/316955/arcadiasoft-chudzik) |
+| 20 | ORGBUD-SERWIS sp. z o.o. | 0000153986 | Kosztorysowanie, inżynieria i nieruchomości | Informatory cenowe dla budownictwa, kursy kosztorysowania, dystrybucja programu KOBRA, księgarnia techniczna | rdzeń | 2024 | 1 511* | 340* | 22,5% | [link](https://rejestr.io/krs/153986/orgbud-serwis) |
 
-### Wykresy
+## 4. Wykresy
 
 ![Przychody](charts/przychody_spolek.png)
 
 ![Zysk netto](charts/zysk_netto_spolek.png)
 
-![Przychody i zysk netto](charts/przychody_i_zysk_netto.png)
+![Przychody i zysk netto wg segmentów](charts/przychody_i_zysk_netto.png)
 
----
+## 5. Analiza
 
-## 4. Analiza
+(analiza zostanie uzupełniona)
 
-**Największe przychody (jednostkowe).**
-- Asseco Poland (1,70 mld zł) i Comarch (ok. 1,42 mld zł*, Grupa 1,71 mld zł) wyraźnie wyprzedzają resztę.
-- Za nimi są:
-  - Asseco Business Solutions: 478 mln zł,
-  - Text: 329 mln zł,
-  - Sygnity: 252 mln zł,
-  - Vercom: 241 mln zł,
-  - Symfonia: 228 mln zł*.
-- Na poziomie grup kolejność się zmienia. Asseco ma 16,8 mld zł przychodów skonsolidowanych, a Vercom skonsolidowany (471 mln zł) wyprzedza Text.
+## 6. Firmy – dane szczegółowe
 
-**Najwyższa marża netto.**
-- *Dane pierwotne:* Sygnity 35,9%, Text 35,2%, Vercom 33,6%, Asseco BS 27,9%, Asseco Poland 25,4%.
-  - U Sygnity i Vercom zysk netto przewyższa EBIT dzięki przychodom finansowym.
-  - U Asseco Poland zysk netto zawiera dywidendy od spółek zależnych.
-  - Na poziomie operacyjnym (EBIT / przychody) najlepsze są Text (38,4%), Sygnity (34,5%) i ABS (30,5%).
-- *Dane z agregatorów:* bardzo wysokie marże mają małe firmy budowlane: ArCADiasoft 40,2% i Athenasoft 39,8%. Te liczby wymagają potwierdzenia.
-- *Straty:* Symfonia (−24,4%) i Develogic (−16,0%), czyli właśnie te podmioty, które konsolidują rynek ERP dla budownictwa.
+### Wdrożeniowcy ERP/CRM (1)
 
-**Najsilniejszy związek z budownictwem.**
-- *Rdzeń działalności.* Najsilniej z budownictwem związane są małe, wyspecjalizowane firmy:
-  - Athenasoft (Norma + Intercenbud), lider kosztorysowania,
-  - SEKOCENBUD (ceny i program SeKo),
-  - Datacomp IT (ZUZIA, BIM 5D),
-  - Develogic (ERP dla deweloperów i GW),
-  - ArCADiasoft (BIM),
-  - Orgbud-Serwis (cenniki i szkolenia).
+**IT.integro sp. z o.o.** — Integrator / wdrożeniowiec ERP (partner Microsoft Dynamics 365) + ISV
+- KRS 0000014040 · NIP 7780021279 · REGON 632507882 · ul. Ząbkowicka 12, 60-166 Poznań (wg KRS; część serwisów podaje adres w Warszawie) · https://itintegro.com
+- Partner Microsoft Dynamics od 1991 r.; wdraża Business Central w Polsce i ponad 60 krajach; obsługuje usługi profesjonalne, handel/dystrybucję, produkcję i logistykę.
+- Budownictwo (brak): Brak potwierdzonego związku
+- Finanse 2025 (jednostkowe (agregator: bizraport/aleo), status badania nie ustalono; agregator*): przychody 128 935, zysk brutto ze sprzedaży nie ustalono, EBIT 15 400, EBITDA nie ustalono, zysk netto 14 479; dane: https://rejestr.io/krs/14040/it-integro
+- Uwagi: Przychody = przychody netto ze sprzedaży produktów ok. 128,9 mln zł (razem ok. 132,9 mln zł); EBIT ok. 15,4 mln zł. Źródła: https://www.bizraport.pl/krs/0000014040/it-integro-spolka-z-ograniczona-odpowiedzialnoscia, https://aleo.com/int/company/it.-integro-spolka-z-ograniczona-odpowiedzialnoscia
 
-  Łącznie ich przychody to ok. 56 mln zł, mniej niż jedna średnia spółka SaaS z GPW.
-- *Dedykowana oferta u dużych dostawców ERP:*
-  - Symfonia, przez przejęcie Develogic, to najwyraźniejszy ruch konsolidacyjny w segmencie ERP dla budownictwa;
-  - Asseco Business Solutions ma ofertę „ERP dla budownictwa” w Macrologic, Softlab i WAPRO.
-- *Związek pośredni:* Comarch, Asseco Poland i enova365 (Soneta) mają wdrożenia u wykonawców, ale bez produktu branżowego.
+### Producenci ERP (7)
 
-**Integratorzy vs SaaS vs ERP.**
-- *Integratorzy i wdrożeniowcy:* Asseco Poland, Sygnity, IT.integro (Microsoft Dynamics) oraz częściowo Comarch i Forterro.
-- *Czyści producenci SaaS:* Text, Vercom, Shoper i iFirma. Mają najwyższe marże i model abonamentowy, ale żaden nie ma produktu dla budownictwa.
-- *Producenci ERP (licencja, chmura, kanał partnerski):* ABS, Symfonia, InsERT, Soneta, Streamsoft, Forterro i Comarch.
-- *Wniosek dla segmentu budowlanego:* rynek dzieli się na dwie części. Jedna to wyspecjalizowane, małe i rentowne narzędzia (kosztorysowanie, ceny, BIM). Druga to moduły w ogólnych ERP. Pełnego, skalowalnego ERP/SaaS „end-to-end” dla generalnego wykonawcy, obejmującego kosztorys, budżet, podwykonawców, rozliczanie robót i flotę, jest w Polsce niewiele: Develogic jest mały i nierentowny, a Symfonia go dopiero integruje. To potencjalna nisza rynkowa.
+**Comarch S.A.** — Producent ERP/SaaS + integrator IT (od 26.03.2025 poza GPW)
+- KRS 0000057567 · NIP 6770065406 · REGON 350527377 · al. Jana Pawła II 39A, 31-864 Kraków · https://www.comarch.pl
+- Polski producent oprogramowania i integrator. Linie ERP dla MŚP i dużych firm (XL, Optima, Altum, w tym w chmurze), systemy dla telekomów, bankowości, ubezpieczeń, handlu, sektora publicznego i zdrowia; własne centra danych.
+- Budownictwo (pośredni): Pośredni: case studies Comarch ERP XL/CDN XL w firmach budowlanych ALSTAL Grupa Budowlana (https://www.comarch.pl/files-pl/file_111/ALSTALGB-CS.pdf) i ELMO SA (https://www.comarch.pl/files-pl/file_115/ELMO-SA.pdf); brak dedykowanego modułu budowlanego
+- Finanse 2025 (jednostkowe (agregator, dane z KRS); grupa: skonsolidowane z raportu rocznego; agregator*): przychody 1 417 910, zysk brutto ze sprzedaży nie ustalono, EBIT nie ustalono, EBITDA nie ustalono, zysk netto 120 493; dane: https://www.comarch.pl/files-pl/file_1234/Comarch-Raport-Roczny-2025.pdf; plik: `reports/Comarch_2025_raport_roczny.pdf`
+- Uwagi: Raport roczny 2025 (PDF) podaje tylko dane Grupy: przychody 1 714 mln zł (+6% r/r), EBITDA 381 mln zł, zakontraktowanie 1 935 mln zł - zweryfikowane w PDF. Dane jednostkowe 2025 (przychody netto 1 417 910 tys., zysk netto 120 493 tys.) pochodzą z bizraport.pl (sprawozdanie z KRS) i nie zostały zweryfikowane w dokumencie źródłowym. Kontrolnie: jednostkowe 2024 wg QSr 4/2024: przychody 1 341 703 tys., zysk netto 112 402 tys. (https://www.comarch.pl/files-pl/file_793/QSr_4_2024.pdf).
 
----
+**Asseco Business Solutions S.A.** — Dostawca ERP / producent SaaS (GPW: ABS)
+- KRS 0000028257 · NIP 5222612717 · REGON 017293003 · ul. Konrada Wallenroda 4C, 20-607 Lublin · https://assecobs.pl
+- Producent własnych systemów ERP dla MŚP i dużych firm (on-premise i chmura), systemów HR, mobilnych systemów sprzedaży i platform B2B; klienci z produkcji, dystrybucji, FMCG, usług i biur rachunkowych.
+- Budownictwo (oferta dedykowana): Bezpośredni (oferta branżowa): strona 'ERP dla budownictwa' - budżety i harmonogramy projektów, kosztorysy, rezerwacja sprzętu, rozliczanie per projekt/budowa, faktury powiązane z protokołami odbioru (https://assecobs.pl/erp/construction/?lang=en)
+- Finanse 2025 (jednostkowe (MSSF), badane; raport): przychody 478 358, zysk brutto ze sprzedaży 212 308, EBIT 145 803, EBITDA 186 377, zysk netto 133 689; dane: https://assecobs.pl/wp-content/uploads/2025/04/Jednostkowe_Sprawozdanie_finansowe_ABS_2025.xhtml; plik: `reports/Asseco_Business_Solutions_2025_jednostkowe_sprawozdanie_finansowe.pdf`
+- Uwagi: Wybrane dane: https://assecobs.pl/wp-content/uploads/2025/04/2025_Wybrane_dane_finansowe_Asseco_Business_Solutions.xhtml. Skonsolidowane 2025: przychody ok. 476,8 mln zł, zysk netto ok. 132,7-132,9 mln zł (prezentacja wyników).
 
-## 5. Ograniczenia danych
+**Symfonia sp. z o.o.** — Dostawca ERP / HR / SaaS (dawniej Sage Symfonia; właściciel: Accel-KKR)
+- KRS 0000228956 · NIP 5262831503 · REGON 140045209 · Al. Jerozolimskie 132, 02-305 Warszawa · https://symfonia.pl
+- Producent oprogramowania ERP, HR i księgowego dla MŚP i średnich firm; rośnie przez akwizycje (Polska, Rumunia, Austria); wdrożenia własne i przez partnerów.
+- Budownictwo (oferta dedykowana): Silny: przejęcie Develogic (ERP dla deweloperów i GW) w grudniu 2025 (https://symfonia.pl/blog/aktualnosci-symfonii/develogic-dolacza-do-grupy-symfonia-nowy-etap-na-drodze-do-cyfryzacji-branzy-budowlanej/), strona 'ERP dla firm budowlanych' (https://symfonia.pl/erp/erp-dla-firm-budowlanych/), referencje Karmar, Marvipol
+- Finanse 01.10.2024-30.09.2025 (jednostkowe (agregator: firmy.ai/rejestr.io), status badania nie ustalono; agregator*): przychody 227 960, zysk brutto ze sprzedaży nie ustalono, EBIT nie ustalono, EBITDA 29 640, zysk netto -55 537; dane: https://rejestr.io/krs/228956/symfonia/sprawozdania
+- Uwagi: Rok obrotowy do 30 września. Rozbieżność: strata -55,5 mln zł (jednostkowa wg firmy.ai/rejestr.io) vs -37,5 mln zł (skonsolidowana wg bizraport.pl). Grupa Symfonia: ok. 250 mln zł przychodu za rok do 30.09.2024 (https://itwiz.pl/grupa-symfonia-z-blisko-250-mln-zl-przychodu-za-2024-rok/). Źródła: https://firmy.ai/KRS/0000228956, https://www.bizraport.pl/krs/0000228956/symfonia-spolka-z-ograniczona-odpowiedzialnoscia
 
-1. **KRS, NIP i REGON nie zweryfikowane w eKRS.**
-   - Oficjalne API KRS i RDF zwracały „Przerwa techniczna” lub 403 dla IP kontenera.
-   - Identyfikatory pochodzą ze zgodnych źródeł wtórnych.
-   - **Datacomp IT:** REGON nie ustalono, a NIP pochodzi tylko z regulaminu sklepu.
-   - **Develogic:** średnia pewność przypisania marki do numeru KRS.
-2. **Dane z agregatorów dla 12 spółek prywatnych.**
-   - Liczby ze sprawozdań złożonych do KRS odczytano pośrednio. Nie było dostępu do PDF ani XML sprawozdań.
-   - Status badania nie jest znany.
-   - Etykiety lat bywają w serwisach przesunięte; tak jest m.in. w aleo.com przy ArCADiasoft.
-   - Rozbieżności między serwisami opisano w kolumnie `uzupelniajace_uwagi` w CSV (Symfonia, Streamsoft, Orgbud, Datacomp).
-3. **Brak plików PDF dla spółek prywatnych.** Sprawozdania w KRS są w formacie XML (e-sprawozdania) i są dostępne tylko przez RDF, który był zablokowany.
-4. **Comarch.**
-   - Spółka jest poza giełdą od 03.2025.
-   - Raport roczny 2025 zawiera wyłącznie wybrane dane Grupy, bez zysku netto.
-   - Dane jednostkowe 2025 pochodzą z agregatora.
-5. **Różne lata obrotowe.**
-   - Text kończy rok 31.03, Symfonia 30.09.
-   - Datacomp IT, ArCADiasoft i Orgbud: najnowsze dostępne dane to 2024.
-   - Forterro: rok 2025 przypisano na podstawie jednego źródła.
-6. **Różne definicje przychodów.**
-   - Asseco Poland i ABS raportują „przychody operacyjne” (MSSF).
-   - InsERT i ArCADiasoft: „przychody operacyjne” z agregatora.
-   - Pozostałe spółki: przychody netto ze sprzedaży.
-   - Zysk brutto ze sprzedaży nie występuje w układzie rodzajowym (Vercom, Shoper) ani w uproszczonym rachunku UoR (iFirma).
-7. **EBITDA.** Raportowana tylko przez Text i Shoper. Dla Asseco Poland, ABS, Sygnity, Vercom i iFirma obliczono ją jako EBIT + amortyzacja.
-8. **Zdarzenia po dniu bilansowym.**
-   - Shoper połączony z cyber_Folks 01.09.2026.
-   - Develogic przejęty przez Symfonię w 12.2025.
-   - Formularze RR Vercom, Text i iFirma mają na Bankier.pl oznaczenie korekty. Dane odczytano z aktualnych wersji ESEF.
-9. **Ograniczony dostęp do serwisów.** bankier.pl, rejestr.io, inwestor.asseco.com i parkiet.com (treść ESPI) blokowały dostęp automatyczny. Dane ESPI odczytano z money.pl.
-10. **Załącznik.** Załącznik wspomniany w poleceniu nie był dostępny w sesji. Raport przygotowano wyłącznie na podstawie źródeł publicznych.
+**InsERT S.A.** — Dostawca ERP / oprogramowania księgowego dla MŚP
+- KRS 0000306888 · NIP 8981945134 · REGON 932283479 · ul. Jerzmanowska 2, 54-519 Wrocław · https://www.insert.com.pl
+- Producent masowego oprogramowania dla mikro i małych firm oraz biur rachunkowych (sprzedaż/magazyn, księgowość, kadry-płace); dystrybucja przez sieć partnerów.
+- Budownictwo (brak): Brak dedykowanego modułu (jedynie rekomendacje partnerów dla małych firm remontowych)
+- Finanse 2025 (jednostkowe (agregator: bizraport/rejestr.io), status badania nie ustalono; agregator*): przychody 103 887, zysk brutto ze sprzedaży nie ustalono, EBIT 4 460, EBITDA nie ustalono, zysk netto 4 174; dane: https://rejestr.io/krs/306888/insert/sprawozdania
+- Uwagi: Przychody = przychody operacyjne ok. 103,9 mln zł (przychody ogółem 104,2 mln zł); pozycja 'przychody netto ze sprzedaży' nie została wyodrębniona. 2024: przychody ok. 91,3-91,6 mln zł, zysk netto 4,3 mln zł. Źródło: https://www.bizraport.pl/krs/0000306888/insert-spolka-akcyjna
 
----
+**Forterro Polska sp. z o.o. (dawniej BPSC)** — Dostawca i wdrożeniowiec ERP/MES (Grupa Forterro)
+- KRS 0000705385 · NIP 6340134346 · REGON 003469134 · Al. Walentego Roździeńskiego 188H, 40-203 Katowice · https://www.bpsc.com.pl
+- Producent i wdrożeniowiec własnego systemu ERP, głównie dla przemysłu (m.in. Famur, Tauron, GH Cranes); od 2025 r. pod nazwą Forterro Polska.
+- Budownictwo (brak): Brak potwierdzonego związku (referencje z przemysłu)
+- Finanse 2025 (prawdopodobnie - wg etykiety rejestr.io) (jednostkowe (agregator: rejestr.io/bizraport), status badania nie ustalono; agregator*): przychody 93 963, zysk brutto ze sprzedaży nie ustalono, EBIT 28 371, EBITDA nie ustalono, zysk netto 24 058; dane: https://rejestr.io/krs/705385/forterro-polska
+- Uwagi: Przychody netto ze sprzedaży 93 963 tys. (przychody ogółem 96 859 tys.). Rok przypisany na podstawie rejestr.io ('dane za 2025'); bizraport nie podaje roku. Źródło: https://www.bizraport.pl/krs/0000705385/forterro-polska-spolka-z-ograniczona-odpowiedzialnoscia; zmiana nazwy: https://www.bpsc.com.pl/pl/aktualnosci/forterro-polska-zamiast-bpsc
 
-## 6. Pobrane raporty (`reports/`)
+**Streamsoft sp. z o.o. sp.k.** — Dostawca i wdrożeniowiec ERP (MŚP i średnie firmy)
+- KRS 0000443818 · NIP 9291851723 · REGON 081108705 · Al. Wojska Polskiego 11, 65-077 Zielona Góra · https://streamsoft.pl
+- Producent ERP z ponad 5000 klientów; wdrożenia bezpośrednie i przez partnerów, m.in. dystrybucja stali (Centrostal), stolarka okienna (Plastixal).
+- Budownictwo (marginalny): Pośredni/marginalny: klienci z branży materiałów budowlanych (Centrostal, Plastixal), brak klientów-wykonawców
+- Finanse 2025 (jednostkowe (agregator: bizraport/aleo), status badania nie ustalono; agregator*): przychody 84 700, zysk brutto ze sprzedaży nie ustalono, EBIT 6 530, EBITDA nie ustalono, zysk netto 5 304; dane: https://rejestr.io/krs/443818
+- Uwagi: Rozbieżność: analizafirm.pl podaje przychody netto 92 410 tys. i zysk netto ok. 6 780 tys. Komplementariusz: Streamsoft sp. z o.o. (KRS 0000434736). Źródła: https://www.bizraport.pl/krs/0000443818/streamsoft-spolka-z-ograniczona-odpowiedzialnoscia-spolka-komandytowa, https://analizafirm.pl/firma/0000443818/streamsoft
 
-| Plik | Zawartość | Źródło |
-|---|---|---|
-| `Asseco_Poland_2025_jednostkowe_sprawozdanie_finansowe.pdf` | Jednostkowe SF 2025 (render ESEF) | [xhtml](https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260331_191944_0510033759_YE25_Sprawozdanie_jednostkowe_Asseco_Poland.xhtml) |
-| `Asseco_Business_Solutions_2025_jednostkowe_sprawozdanie_finansowe.pdf` | Jednostkowe SF 2025 (render ESEF) | [xhtml](https://assecobs.pl/wp-content/uploads/2025/04/Jednostkowe_Sprawozdanie_finansowe_ABS_2025.xhtml) |
-| `Asseco_Business_Solutions_2025_prezentacja_wynikow.pdf` | Prezentacja wyników 2025 | [pdf](https://assecobs.pl/wp-content/uploads/2025/05/Asseco-Business-Solutions-Prezentacja-wynikow-finansowych-za-rok-2025-1.pdf) |
-| `Comarch_2025_raport_roczny.pdf` | Raport roczny 2025 (dane Grupy) | [pdf](https://www.comarch.pl/files-pl/file_1234/Comarch-Raport-Roczny-2025.pdf) |
-| `Sygnity_2025_jednostkowe_sprawozdanie_finansowe.pdf` | Jednostkowe SF 2025 (render ESEF) | [xhtml](https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260324_204010_1904899437_JSF-Sygnity-2025-12-31-1-pl.xhtml) |
-| `Vercom_2025_jednostkowe_sprawozdanie_finansowe.pdf` | Jednostkowe SF 2025 (render ESEF) | [xhtml](https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260318_065948_1206312055_JSF_vrc-2025-12-31-1-pl.xhtml) |
-| `Vercom_2025_sprawozdanie_zarzadu.pdf` | Raport Grupy / sprawozdanie zarządu 2025 | [pdf](https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260318_065948_1206312055_Sprawozdanie_Zarzadu_Vercom_2025.pdf) |
-| `Shoper_2025_jednostkowe_sprawozdanie_finansowe.pdf` | Jednostkowe SF 2025 (render ESEF) | [xhtml](https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260318_070317_0996477630_JSF-Shoper-2025-12-31.xhtml) |
-| `Text_2025-26_sprawozdanie_zarzadu.pdf` | Sprawozdanie zarządu FY2025/26 (render ESEF) | [xhtml](https://investor.text.com/uploads/txt_spraw_zarzadu-2026-03-31-1-pl.xhtml) |
-| `iFirma_2025_sprawozdanie_finansowe.pdf` | SF 2025 (render ESEF) | [xhtml](https://www.ifirma.pl/wp-content/raporty-xml/SAR-2025/raportroczny-SAR_08RoczneSF2025.xhtml) |
+**Soneta sp. z o.o. (enova365)** — Dostawca ERP / HR (kanał partnerski)
+- KRS 0000109244 · NIP 6792705304 · REGON 356381673 · ul. J. Kustronia 44A, 30-432 Kraków · https://www.enova.pl
+- Producent systemu ERP enova365 sprzedawanego przez sieć partnerów wdrożeniowych firmom MŚP i większym w wielu branżach.
+- Budownictwo (pośredni): Pośredni (przez partnerów): system zarządzania budową na enova365 dla BPBP S.A. (https://www.enova.pl/content/uploads/2025/09/enova365-bpbp-s.a.-case-study-mg-rozszerzone.pdf), wdrożenie PEUiM (https://www.enova.pl/content/uploads/2026/01/peuim.pdf), Corleonis (wynajem żurawi)
+- Finanse 2025 (jednostkowe (agregator: sprawozdaniaonline.pl), status badania nie ustalono; agregator*): przychody 76 583, zysk brutto ze sprzedaży nie ustalono, EBIT nie ustalono, EBITDA nie ustalono, zysk netto nie ustalono; dane: https://sprawozdaniaonline.pl/SprawozdaniaFinansowe/0000109244/SONETA-SPOLKA-Z-OGRANICZONA-ODPOWIEDZIALNOSCIA
+- Uwagi: Zysk netto 2025 nie ustalono (EMIS podaje jedynie dynamikę +106% r/r). 2023: przychody ok. 61,7 mln zł, zysk netto 8 051 tys. zł (gowork.pl). Spółka z grupy Asseco.
 
-## 7. Wszystkie źródła
+### Integratorzy i software house'y (2)
 
-**Raporty i ESPI (dane pierwotne)**
-- Asseco Poland:
-  - formularz RR: https://www.money.pl/gielda/raporty/raport,plsoftb00016,7271046741824577.html
-  - prezentacja wyników: https://inwestor.asseco.com/files/investor/uploads/Prezentacja_wynikow_finansowych_Grupy_Asseco_za_2025_rok.pdf
-- Sygnity – formularz RR: https://www.money.pl/gielda/raporty/raport,plcmpld00016,7268229468722241.html
-- Vercom – formularz RR: https://www.money.pl/gielda/raporty/raport,plvrcm000016,7266106906333761.html
-- Shoper – formularz RR: https://www.money.pl/gielda/raporty/raport,plshpr000021,7266106714673729.html
-- iFirma – formularz RR: https://www.money.pl/gielda/raporty/raport,plpwrmd00011,7266460758348353.html
-- Asseco BS:
-  - relacje inwestorskie: https://assecobs.pl/relacje-inwestorskie/raporty-okresowe/
-  - wybrane dane finansowe: https://assecobs.pl/wp-content/uploads/2025/04/2025_Wybrane_dane_finansowe_Asseco_Business_Solutions.xhtml
-- Text:
-  - relacje inwestorskie: https://investor.text.com
-  - wyniki FY2025/26: https://www.biznesradar.pl/a/148900,text-w-2025-26-329-1-mln-zl-przychodow-116-6-mln-zl-zysku-netto-i-83-12-mln-usd-arr
-- Comarch:
-  - raporty roczne: https://www.comarch.pl/relacje-inwestorskie/raporty-roczne-1/
-  - QSr 4/2024: https://www.comarch.pl/files-pl/file_793/QSr_4_2024.pdf
-  - wyniki 2025: https://strefainwestorow.pl/wiadomosci/20260416/comarch-z-rekordowymi-wynikami-i-portfelem-zamowien-mocno-stawia-na-ai
-- Połączenie cyber_Folks z Shoper: https://www.biznesradar.pl/a/150574,cyber-folks-sa-26-2026-wpis-polaczenia-cyber-folks-s-a-z-shoper-s-a-podwyzszenia-kapitalu-zakladowego-oraz-zmiany-statutu-w-zwia
+**Asseco Poland S.A.** — Integrator IT / producent oprogramowania (GPW: ACP)
+- KRS 0000033391 · NIP 5220003782 · REGON 010334578 · ul. Olchowa 14, 35-322 Rzeszów · https://pl.asseco.com
+- Największy polski producent oprogramowania i spółka matka międzynarodowej Grupy Asseco. Projektuje, wdraża i utrzymuje systemy dla finansów, sektora publicznego (m.in. ZUS), ochrony zdrowia, utilities i przedsiębiorstw.
+- Budownictwo (pośredni): Pośredni: case study wdrożenia Microsoft Dynamics AX z modyfikacjami branżowymi (rejestr umów, kaucje gwarancyjne inwestor/podwykonawca) w Eiffage Budownictwo Mitex S.A. (https://pl.asseco.com/en/case-study/eiffage-budownictwo-mitex-sa-microsoft-dynamix-ax-60)
+- Finanse 2025 (jednostkowe (MSSF), badane; raport): przychody 1 703 400, zysk brutto ze sprzedaży 551 200, EBIT 342 600, EBITDA 414 300, zysk netto 432 700; dane: https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260331_191944_0510033759_YE25_Sprawozdanie_jednostkowe_Asseco_Poland.xhtml; plik: `reports/Asseco_Poland_2025_jednostkowe_sprawozdanie_finansowe.pdf`
+- Uwagi: Przychody = 'przychody operacyjne' MSSF. Zysk netto zawiera wysokie przychody finansowe (dywidendy od spółek zależnych) - dlatego zysk netto > EBIT. Skonsolidowane 2025: przychody 16 779,8 mln zł, zysk netto przypisany akcjonariuszom 1 138,7 mln zł (z zyskiem ok. 499 mln zł ze sprzedaży akcji Sapiens). ESPI RR: https://www.money.pl/gielda/raporty/raport,plsoftb00016,7271046741824577.html
 
-**Rejestry i agregatory (KRS, NIP, REGON, dane spółek prywatnych)**
-- Profile rejestr.io: https://rejestr.io/krs/{numer} (linki przy każdej spółce w CSV)
-- Profile bizraport.pl:
-  - InsERT: https://www.bizraport.pl/krs/0000306888/insert-spolka-akcyjna
-  - Symfonia: https://www.bizraport.pl/krs/0000228956/symfonia-spolka-z-ograniczona-odpowiedzialnoscia
-  - Soneta: https://www.bizraport.pl/krs/0000109244/soneta-spolka-z-ograniczona-odpowiedzialnoscia
-  - Forterro Polska: https://www.bizraport.pl/krs/0000705385/forterro-polska-spolka-z-ograniczona-odpowiedzialnoscia
-  - IT.integro: https://www.bizraport.pl/krs/0000014040/it-integro-spolka-z-ograniczona-odpowiedzialnoscia
-  - Streamsoft: https://www.bizraport.pl/krs/0000443818/streamsoft-spolka-z-ograniczona-odpowiedzialnoscia-spolka-komandytowa
-  - Athenasoft: https://www.bizraport.pl/krs/0000035122/athenasoft-spolka-z-ograniczona-odpowiedzialnoscia
-  - SEKOCENBUD: https://www.bizraport.pl/krs/0000092639/sekocenbud-spolka-z-ograniczona-odpowiedzialnoscia
-  - ORGBUD-SERWIS: https://www.bizraport.pl/krs/0000153986/orgbud-serwis-spolka-z-ograniczona-odpowiedzialnoscia
-  - Datacomp IT: https://www.bizraport.pl/krs/0000936569/datacomp-it-spolka-z-ograniczona-odpowiedzialnoscia
-  - ArCADiasoft: https://www.bizraport.pl/krs/0000316955/arcadiasoft-chudzik-spolka-jawna
-  - Develogic: https://www.bizraport.pl/krs/0000873823/develogic-spolka-z-ograniczona-odpowiedzialnoscia
-  - Comarch: https://www.bizraport.pl/krs/0000057567/comarch-spolka-akcyjna
-- Pozostałe serwisy:
-  - firmy.ai (Symfonia): https://firmy.ai/KRS/0000228956
-  - analizafirm.pl (Streamsoft): https://analizafirm.pl/firma/0000443818/streamsoft
-  - sprawozdaniaonline.pl (Soneta): https://sprawozdaniaonline.pl/SprawozdaniaFinansowe/0000109244/SONETA-SPOLKA-Z-OGRANICZONA-ODPOWIEDZIALNOSCIA
-  - okredo.com (Datacomp IT): https://okredo.com/pl-pl/firma/datacomp-it-spolka-z-ograniczona-odpowiedzialnoscia-krs-0000936569
-  - nipregon.pl (Develogic): https://nipregon.pl/firma/develogic-spolka-z-ograniczona-odpowiedzialnoscia-nip-8971731779
-  - imsig.pl (ogłoszenia MSiG): https://www.imsig.pl/krs/0000028257, https://www.imsig.pl/krs/0000228956/sprawozdania
-- Oficjalna weryfikacja (zalecana):
-  - wyszukiwarka KRS: https://wyszukiwarka-krs.ms.gov.pl/
-  - przeglądarka dokumentów finansowych (RDF): https://rdf-przegladarka.ms.gov.pl/
+**Sygnity S.A.** — Integrator IT / konsultant IT (GPW: SGN)
+- KRS 0000008162 · NIP 5860005293 · REGON 190407926 · ul. Postępu 17B, 02-676 Warszawa · https://www.sygnity.pl
+- Integrator i producent oprogramowania, głównie dla administracji centralnej i samorządowej, bankowości, ubezpieczeń, energetyki i przedsiębiorstw; budowa systemów dedykowanych, utrzymanie, outsourcing.
+- Budownictwo (brak): Brak potwierdzonego związku
+- Finanse 2025 (jednostkowe (MSSF), badane; raport): przychody 252 459, zysk brutto ze sprzedaży 118 336, EBIT 87 099, EBITDA 92 351, zysk netto 90 690; dane: https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260324_204010_1904899437_JSF-Sygnity-2025-12-31-1-pl.xhtml; plik: `reports/Sygnity_2025_jednostkowe_sprawozdanie_finansowe.pdf`
+- Uwagi: ESPI RR: https://www.money.pl/gielda/raporty/raport,plcmpld00016,7268229468722241.html. Skonsolidowane 2025: przychody 350 256 tys., EBIT 89 482 tys., zysk netto 77 260 tys. (wg komunikatów; nie weryfikowano w SSF).
 
-**Związek z budownictwem i opis działalności**
-- Asseco BS – ERP dla budownictwa: https://assecobs.pl/erp/construction/?lang=en
-- Asseco Poland – Eiffage Budownictwo Mitex: https://pl.asseco.com/en/case-study/eiffage-budownictwo-mitex-sa-microsoft-dynamix-ax-60
-- Comarch – case studies ALSTAL i ELMO: https://www.comarch.pl/files-pl/file_111/ALSTALGB-CS.pdf, https://www.comarch.pl/files-pl/file_115/ELMO-SA.pdf
-- Symfonia:
-  - przejęcie Develogic: https://symfonia.pl/blog/aktualnosci-symfonii/develogic-dolacza-do-grupy-symfonia-nowy-etap-na-drodze-do-cyfryzacji-branzy-budowlanej/
-  - ERP dla firm budowlanych: https://symfonia.pl/erp/erp-dla-firm-budowlanych/
-  - oferta dla branży budowlanej: https://symfonia.pl/oprogramowanie/branza-budowlana/
-- enova365 (Soneta) – case studies BPBP i PEUiM: https://www.enova.pl/content/uploads/2025/09/enova365-bpbp-s.a.-case-study-mg-rozszerzone.pdf, https://www.enova.pl/content/uploads/2026/01/peuim.pdf
-- Athenasoft / Intercenbud: https://ath.pl/pl-pl/produkty/baza-cen-intercenbud, https://blog.intercenbud.pl/kontakt/
-- SEKOCENBUD: https://sekocenbud.pl/o-firmie/
-- Datacomp (ZUZIA) – regulamin sklepu: https://sklep.datacomp.com.pl/regulamin-sklepu-internetowego-datacomp/
-- ArCADiasoft: https://trade.gov.pl/en/?p=56696
-- ORGBUD-SERWIS: https://orgbud.pl/kontakt/
-- Text (LiveChat) – strona dla firm budowlanych: https://www.livechat.com/solutions/construction-companies/
-- Forterro Polska – zmiana nazwy BPSC: https://www.bpsc.com.pl/pl/aktualnosci/forterro-polska-zamiast-bpsc
-- iFirma – KSeF: https://www.ifirma.pl/ksef/
+### SaaS B2B (4)
+
+**Text S.A. (dawniej LiveChat Software S.A.)** — Producent SaaS (GPW: TXT)
+- KRS 0000290756 · NIP 8992447196 · REGON 932803200 · ul. Zwycięska 47, 53-033 Wrocław · https://www.text.com
+- Producent globalnych aplikacji SaaS do komunikacji z klientem; sprzedaż głównie za granicą (USD), klienci z wielu branż.
+- Budownictwo (marginalny): Marginalny: strona marketingowa 'LiveChat for construction companies' (https://www.livechat.com/solutions/construction-companies/); brak potwierdzonych wdrożeń
+- Finanse 2025/26 (01.04.2025-31.03.2026) (jednostkowe (MSR od 01.04.2024), badane; raport): przychody 329 073, zysk brutto ze sprzedaży 222 320, EBIT 126 258, EBITDA 152 654, zysk netto 115 935; dane: https://investor.text.com/uploads/txt_spraw_zarzadu-2026-03-31-1-pl.xhtml; plik: `reports/Text_2025-26_sprawozdanie_zarzadu.pdf`
+- Uwagi: Rok obrotowy kończy się 31 marca - nieporównywalny 1:1 z rokiem kalendarzowym. Skonsolidowane 2025/26: zysk netto 116,6 mln zł, EBITDA 153,3 mln zł.
+
+**Vercom S.A.** — Producent SaaS / CPaaS (GPW: VRC)
+- KRS 0000535618 · NIP 7811765125 · REGON 300061423 · ul. Wierzbięcice 1B, 61-569 Poznań · https://vercom.pl
+- Dostawca platform CPaaS do automatyzacji komunikacji e-mail/SMS z klientami; obsługuje e-commerce, handel, finanse i firmy technologiczne w Polsce i za granicą.
+- Budownictwo (brak): Brak potwierdzonego związku
+- Finanse 2025 (jednostkowe (MSSF), badane; raport): przychody 240 864, zysk brutto ze sprzedaży nie ustalono, EBIT 72 834, EBITDA 80 810, zysk netto 80 885; dane: https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260318_065948_1206312055_JSF_vrc-2025-12-31-1-pl.xhtml; plik: `reports/Vercom_2025_jednostkowe_sprawozdanie_finansowe.pdf`
+- Uwagi: Spadek przychodów jednostkowych r/r (288 004 -> 240 864 tys.). Skonsolidowane 2025: przychody 471 152 tys., zysk netto akcjonariuszy 89 866 tys. ESPI RR: https://www.money.pl/gielda/raporty/raport,plvrcm000016,7266106906333761.html
+
+**Shoper S.A. (od 01.09.2026 przejęta przez cyber_Folks S.A.)** — Producent SaaS (e-commerce)
+- KRS 0000395171 · NIP 9452156998 · REGON 121495203 · ul. Pawia 9, 31-154 Kraków (do połączenia) · https://www.shoper.pl
+- Polska platforma SaaS e-commerce dla MŚP; segment Subscriptions i Solutions (płatności, wysyłki, marketing).
+- Budownictwo (marginalny): Marginalny: poradnik sprzedaży artykułów budowlanych online, klienci-sklepy z wyrobami dla budownictwa (np. e-armet.pl); brak modułu branżowego
+- Finanse 2025 (jednostkowe (MSSF), badane; raport): przychody 193 467, zysk brutto ze sprzedaży nie ustalono, EBIT 45 187, EBITDA 61 366, zysk netto 35 409; dane: https://money2.wpcdn.pl/gielda/gpw/raporty/2026/03/20260318_070317_0996477630_JSF-Shoper-2025-12-31.xhtml; plik: `reports/Shoper_2025_jednostkowe_sprawozdanie_finansowe.pdf`
+- Uwagi: Połączenie z cyber_Folks S.A. (KRS 0000685595) zarejestrowane 01.09.2026 - Shoper S.A. jako podmiot przejmowany przestaje istnieć; FY2025 to ostatni pełny rok samodzielny. Skonsolidowane 2025: przychody 217 974 tys., zysk netto 43 083 tys. ESPI RR: https://www.money.pl/gielda/raporty/raport,plshpr000021,7266106714673729.html
+
+**iFirma S.A.** — Producent SaaS (księgowość, fakturowanie, KSeF) + biuro rachunkowe online (GPW: IFI)
+- KRS 0000281947 · NIP 8981647572 · REGON 931082394 · ul. Grabiszyńska 241G, 53-234 Wrocław · https://www.ifirma.pl
+- Internetowa księgowość i fakturowanie w modelu SaaS dla JDG i małych spółek, z bezpłatną integracją z KSeF (wysyłka faktur sprzedaży, import zakupowych) i usługami biura rachunkowego.
+- Budownictwo (brak): Brak dedykowanego modułu (obsługa KSeF ogólnobranżowa)
+- Finanse 2025 (jednostkowe (UoR), badane (4Audyt); raport): przychody 63 390, zysk brutto ze sprzedaży nie ustalono, EBIT 15 455, EBITDA 15 926, zysk netto 13 017; dane: https://www.ifirma.pl/wp-content/raporty-xml/SAR-2025/raportroczny-SAR_08RoczneSF2025.xhtml; plik: `reports/iFirma_2025_sprawozdanie_finansowe.pdf`
+- Uwagi: Spółka publikuje wyłącznie raport jednostkowy. ESPI RR: https://www.money.pl/gielda/raporty/raport,plpwrmd00011,7266460758348353.html
+
+### Cyfryzacja budowy (contech, BIM/CAD) (1)
+
+**ArCADiasoft Chudzik sp. j.** — Dostawca rozwiązania budowlanego (BIM / projektowanie konstrukcji)
+- KRS 0000316955 · NIP 7251676810 · REGON 471726120 · ul. Sienkiewicza 85/87, 90-057 Łódź · https://www.arcadiasoft.pl
+- Polski producent oprogramowania BIM/CAD dla architektów, projektantów instalacji i konstruktorów; użytkownicy to głównie biura projektowe.
+- Budownictwo (rdzeń): Rdzeń działalności: BIM i projektowanie budowlane (https://trade.gov.pl/en/?p=56696)
+- Finanse 2024 (jednostkowe (agregator: bizraport), status badania nie ustalono; agregator*): przychody 6 354, zysk brutto ze sprzedaży nie ustalono, EBIT nie ustalono, EBITDA nie ustalono, zysk netto 2 554; dane: https://rejestr.io/krs/316955/arcadiasoft-chudzik
+- Uwagi: Spółka jawna (wpisana do rejestru przedsiębiorców KRS). Przychody = przychody operacyjne. Aleo podaje inne etykiety lat (prawdopodobnie przesunięte). Powiązana INTERSOFT sp. z o.o. (KRS 0000126422).
+
+### Kosztorysowanie, inżynieria i nieruchomości (5)
+
+**Athenasoft sp. z o.o. (Norma, Intercenbud)** — Dostawca rozwiązania budowlanego (kosztorysowanie + cenniki)
+- KRS 0000035122 · NIP 1131896687 · REGON 012924870 · ul. Leszczynowa 7, 03-197 Warszawa · https://ath.pl
+- Producent wiodącego w Polsce oprogramowania kosztorysowego Norma oraz operator bazy cenowej INTERCENBUD; użytkownicy: kosztorysanci, projektanci, wykonawcy, inwestorzy, inspektorzy nadzoru, rzeczoznawcy.
+- Budownictwo (rdzeń): Rdzeń działalności: kosztorysowanie i cenniki budowlane (https://ath.pl/pl-pl/produkty/baza-cen-intercenbud, https://blog.intercenbud.pl/kontakt/)
+- Finanse 2025 (jednostkowe (agregator: bizraport/rejestr.io), status badania nie ustalono; agregator*): przychody 20 212, zysk brutto ze sprzedaży nie ustalono, EBIT nie ustalono, EBITDA nie ustalono, zysk netto 8 051; dane: https://rejestr.io/krs/35122/athenasoft
+- Uwagi: Przychody netto ze sprzedaży 20 211,9 tys. (bizraport); rejestr.io ok. 20 980 tys. (prawdopodobnie przychody ogółem). Zysk netto 8 051,1 tys. - zgodny w dwóch serwisach. Etykieta roku 2025 niezweryfikowana datą złożenia. Intercenbud to marka Athenasoft, nie odrębna spółka.
+
+**SEKOCENBUD sp. z o.o.** — Dostawca rozwiązania budowlanego (cenniki + kosztorysowanie)
+- KRS 0000092639 · NIP 5260210441 · REGON 001266562 · ul. Puławska 182, 02-670 Warszawa · https://sekocenbud.pl
+- Wydawca systemu informacji cenowej SEKOCENBUD (biuletyny drukowane i elektroniczne, portal cenowy) oraz programu kosztorysowego SeKo; do 30.06.2023 jako OWEOB 'Promocja' sp. z o.o.
+- Budownictwo (rdzeń): Rdzeń działalności: ceny i kosztorysowanie robót budowlanych, wykorzystywane m.in. przez inwestorów publicznych (https://sekocenbud.pl/o-firmie/)
+- Finanse 2025 (jednostkowe (agregator: rejestr.io), status badania nie ustalono; agregator*): przychody 11 925, zysk brutto ze sprzedaży nie ustalono, EBIT nie ustalono, EBITDA nie ustalono, zysk netto 4 132; dane: https://rejestr.io/krs/92639/sekocenbud
+- Uwagi: 2024: przychody ok. 11,2 mln zł, zysk ok. 3,9 mln zł (aleo); 2023: 10 501 / 3 826 tys. (bizraport).
+
+**Develogic sp. z o.o.** — Dostawca ERP dla budownictwa i deweloperów (od 12.2025 w Grupie Symfonia)
+- KRS 0000873823 · NIP 8971731779 · REGON 020562490 · Poznań (adres ulicy nie potwierdzony w KRS) · https://develogic.pl
+- ERP dla deweloperów, generalnych wykonawców, podwykonawców i inwestorów; sprzedawany wspólnie jako 'Symfonia + Develogic'.
+- Budownictwo (rdzeń): Rdzeń działalności: ERP dla deweloperów i GW (https://symfonia.pl/oprogramowanie/branza-budowlana/)
+- Finanse 2025 (jednostkowe (agregator: rejestr.io/nipregon), status badania nie ustalono; agregator*): przychody 8 600, zysk brutto ze sprzedaży nie ustalono, EBIT nie ustalono, EBITDA nie ustalono, zysk netto -1 375; dane: https://rejestr.io/krs/873823/develogic
+- Uwagi: Przychody ok. 8,6 mln zł (zaokrąglone przez rejestr.io). 2024: przychody 7 886,6 tys., zysk netto 59,5 tys. (nipregon.pl). Średnia pewność przypisania marki do tego KRS (inny serwis podaje KRS 0000979250 - niezweryfikowane).
+
+**Datacomp IT sp. z o.o. (ZUZIA)** — Dostawca rozwiązania budowlanego (kosztorysowanie, BIM 5D)
+- KRS 0000936569 · NIP 6793228148 · REGON nie ustalono · Kraków (adres siedziby w KRS nie potwierdzony) · https://datacomp.com.pl
+- Producent i sprzedawca pakietu kosztorysowego ZUZIA i ZUZIAbim (BIM + kosztorys) w modelu subskrypcji; klienci: kosztorysanci, wykonawcy, biura projektowe.
+- Budownictwo (rdzeń): Rdzeń działalności: kosztorysowanie i BIM 5D (https://sklep.datacomp.com.pl/regulamin-sklepu-internetowego-datacomp/)
+- Finanse 2024 (jednostkowe (agregator: okredo/gowork), status badania nie ustalono; agregator*): przychody 7 232, zysk brutto ze sprzedaży nie ustalono, EBIT nie ustalono, EBITDA nie ustalono, zysk netto -3; dane: https://rejestr.io/krs/936569/datacomp-it
+- Uwagi: REGON nie ustalono; NIP z regulaminu sklepu (niepodwójnie sprawdzony). Bizraport podaje (bez roku, możliwie 2025): przychody 8 162,5 tys., strata 166,7 tys. Pierwotny producent DATACOMP sp. z o.o. (KRS 0000193067) w likwidacji.
+
+**ORGBUD-SERWIS sp. z o.o.** — Dostawca rozwiązania budowlanego (cenniki, szkolenia, dystrybucja programów kosztorysowych)
+- KRS 0000153986 · NIP 7780045280 · REGON 004866423 · ul. Stablewskiego 43, Poznań · https://orgbud.pl
+- Poznański wydawca informacji cenowych dla budownictwa, organizator szkoleń kosztorysowych i dystrybutor oprogramowania kosztorysowego.
+- Budownictwo (rdzeń): Rdzeń działalności: cenniki i kosztorysowanie (https://orgbud.pl/kontakt/)
+- Finanse 2024 (jednostkowe (agregator: rejestr.io), status badania nie ustalono; agregator*): przychody 1 511, zysk brutto ze sprzedaży nie ustalono, EBIT nie ustalono, EBITDA nie ustalono, zysk netto 340; dane: https://rejestr.io/krs/153986/orgbud-serwis
+- Uwagi: Mała spółka; bizraport podaje 1 447,0 / 273,9 tys. bez wskazania roku. Firma głównie odsprzedaje, a nie rozwija oprogramowanie.
+
+## 7. Ograniczenia danych
+
+- **Identyfikatory nie zweryfikowane w eKRS** (blokada IP). Tam, gdzie pewność jest niższa, opisano to w uwagach przy firmie.
+- **Większość danych finansowych pochodzi z agregatorów.** Status badania nie jest znany, etykiety lat bywają przesunięte, a serwisy czasem się różnią. Rozbieżności opisano w uwagach.
+- **Brak plików PDF dla spółek prywatnych.** E-sprawozdania XML są dostępne tylko w RDF, który był zablokowany. Lokalne PDF-y mają tylko spółki giełdowe z pierwszej rundy.
+- **Różne lata i definicje.** Lata obrotowe różnią się między firmami. Przychody operacyjne (MSSF) to nie to samo co przychody netto ze sprzedaży (UoR), a zysku brutto ze sprzedaży nie ma w układzie rodzajowym.
+- **Spółki zależne grup zagranicznych** (np. biura projektowe, dostawcy BIM/CAD) raportują w Polsce tylko polską spółkę. Jej przychody nie odzwierciedlają skali grupy, a część oddziałów nie publikuje danych.
+- **Spółki osobowe i JDG** (część producentów oprogramowania kosztorysowego) nie mają KRS ani publicznych sprawozdań, dlatego je pominięto.
+- **Zdarzenia po dniu bilansowym**: połączenia i przejęcia (np. Shoper → cyber_Folks, Develogic → Symfonia).
+- Załącznik wspomniany w pierwszym poleceniu nie był dostępny. Raport opiera się wyłącznie na źródłach publicznych.
+
+## 8. Weryfikacja oficjalna
+
+- https://wyszukiwarka-krs.ms.gov.pl/
+- https://rdf-przegladarka.ms.gov.pl/
